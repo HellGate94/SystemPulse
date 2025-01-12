@@ -1,0 +1,38 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SystemPulse.App"
+             xmlns:vm="using:SystemPulse.ViewModels"
+             x:DataType="vm:AppViewModel"
+             RequestedThemeVariant="Default">
+
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Resources/ProgressBar.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
+
+	<Application.Styles>
+        <FluentTheme />
+		<StyleInclude Source="/Resources/Style.axaml" />
+    </Application.Styles>
+	<TrayIcon.Icons>
+		<TrayIcons>
+			<TrayIcon Icon="/Assets/SystemPulse.ico" ToolTipText="System Pulse">
+				<TrayIcon.Menu>
+					<NativeMenu>
+						<NativeMenuItem Header="Settings">
+							<NativeMenu>
+								<NativeMenuItem Header="Add to Startup" Command="{Binding AddStartupCommand}" />
+								<NativeMenuItem Header="Remove from Startup" Command="{Binding RemoveStartupCommand}" />
+							</NativeMenu>
+						</NativeMenuItem>
+						<NativeMenuItemSeparator />
+						<NativeMenuItem Header="Exit" Command="{Binding ExitCommand}" />
+					</NativeMenu>
+				</TrayIcon.Menu>
+			</TrayIcon>
+		</TrayIcons>
+	</TrayIcon.Icons>
+</Application>

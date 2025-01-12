@@ -1,0 +1,58 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:ClassModifier="internal">
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<StackPanel Orientation="Horizontal" Spacing="10">
+				<StackPanel Spacing="10">
+					<ProgressBar Value="5" Maximum="10" />
+					<ProgressBar Value="50" />
+					<ProgressBar Value="50" Minimum="25" Maximum="75" />
+					<ProgressBar ShowProgressText="True" Value="50"/>
+					<ProgressBar ShowProgressText="True"
+								 ProgressTextFormat="\{1\} percent"
+								 Minimum="50"
+								 Maximum="100"
+								 Value="70"/>
+				</StackPanel>
+				<ProgressBar ShowProgressText="True" Value="50" Orientation="Vertical"/>
+			</StackPanel>
+		</Border>
+	</Design.PreviewWith>
+
+	<ControlTheme x:Key="{x:Type ProgressBar}" TargetType="ProgressBar">
+		<Setter Property="Foreground" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+		<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+		<Setter Property="BorderThickness" Value="{DynamicResource ProgressBarBorderThemeThickness}" />
+		<Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightTransparentBrush}" />
+		<Setter Property="MinHeight" Value="{DynamicResource ProgressBarThemeMinHeight}" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="Template">
+			<ControlTemplate TargetType="ProgressBar">
+				<Border x:Name="ProgressBarRoot"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						Background="{TemplateBinding Background}"
+						ClipToBounds="True"
+						CornerRadius="3">
+						<Panel x:Name="DeterminateRoot" Margin="1">
+							<Border
+								x:Name="PART_Indicator"
+								Margin="{TemplateBinding Padding}"
+								Background="{TemplateBinding Foreground}"
+								CornerRadius="2" />
+						</Panel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+		<Style Selector="^:horizontal /template/ Border#PART_Indicator">
+			<Setter Property="HorizontalAlignment" Value="Left" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+		</Style>
+		<Style Selector="^:vertical /template/ Border#PART_Indicator">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Bottom" />
+		</Style>
+	</ControlTheme>
+</ResourceDictionary>

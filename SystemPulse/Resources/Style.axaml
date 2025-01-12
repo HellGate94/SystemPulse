@@ -1,0 +1,62 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Style Selector="StackPanel.Header">
+		<Setter Property="Margin" Value="0,20,0,5" />
+	</Style>
+	<Style Selector="StackPanel.Header > Label">
+		<Setter Property="FontSize" Value="20" />
+		<Setter Property="FontWeight" Value="Bold" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
+	<Style Selector="StackPanel.Header > PathIcon">
+		<Setter Property="Width" Value="30" />
+		<Setter Property="Height" Value="30" />
+		<Setter Property="Margin" Value="0,0,5,0" />
+	</Style>
+
+	<Style Selector="Border.Load">
+		<Setter Property="BorderBrush" Value="White" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Padding" Value="1" />
+		<Setter Property="CornerRadius" Value="3" />
+	</Style>
+	<Style Selector="ProgressBar.Load">
+		<Setter Property="Foreground" Value="White" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="White" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+		<!--
+		<Setter Property="Transitions">
+			<Setter.Value>
+				<Transitions>
+					<DoubleTransition Property="Value" Duration="0:0:1"/>
+				</Transitions>
+			</Setter.Value>
+		</Setter>
+		-->
+	</Style>
+	<Style Selector="ProgressBar.Load.isAlert:horizontal">
+		<Setter Property="Foreground">
+			<Setter.Value>
+				<LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+					<GradientStop Color="#FFFFFF" Offset="0.85" />
+					<GradientStop Color="#C7253E" Offset="0.975" />
+				</LinearGradientBrush>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style Selector="ProgressBar.Load.isAlert:vertical">
+		<Setter Property="Foreground">
+			<Setter.Value>
+				<LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
+					<GradientStop Color="#FFFFFF" Offset="0.85" />
+					<GradientStop Color="#C7253E" Offset="0.975" />
+				</LinearGradientBrush>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</Styles>
