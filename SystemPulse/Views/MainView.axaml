@@ -8,8 +8,8 @@
 			 xmlns:model="using:SystemPulse.Models"
              x:Class="SystemPulse.Views.MainView"
              x:DataType="vm:MainViewModel">
-	<StackPanel Margin="5" VerticalAlignment="Center">
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+	<StackPanel Margin="5">
+		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,100,0,0">
 			<PathIcon>
 				<PathIcon.Data>
 					<GeometryGroup>
