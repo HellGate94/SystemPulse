@@ -18,6 +18,7 @@ public partial class AppViewModel(ILogger<AppViewModel> logger) : ViewModelBase 
 
     [RelayCommand]
     private void AddStartup() {
+        string appPath = Environment.ProcessPath;
         try {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RUN_KEY, true);
             if (key == null) {
@@ -25,7 +26,7 @@ public partial class AppViewModel(ILogger<AppViewModel> logger) : ViewModelBase 
                 return;
             }
 
-            key.SetValue(APP_NAME, System.Reflection.Assembly.GetExecutingAssembly().Location);
+            key.SetValue(APP_NAME, appPath);
             logger.LogInformation("Application added to startup.");
         } catch (Exception ex) {
             logger.LogError("An error occurred while trying to add the application to startup {ex}", ex);
