@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Platform;
 using System;
-using System.Runtime.InteropServices;
 
 namespace SystemPulse.Views;
 

@@ -26,7 +26,10 @@ public partial class MainViewModel : ViewModelBase {
     private readonly HardwareMonitorService _hwMonitor;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor("HourRotation", "MinuteRotation")]
     private DateTime _now;
+    public float HourRotation => Now.Hour / 12f * 360f;
+    public float MinuteRotation => Now.Minute / 60f * 360f;
 
     [ObservableProperty]
     ObservableCollection<PhysicalCores> _physicalCores = [];

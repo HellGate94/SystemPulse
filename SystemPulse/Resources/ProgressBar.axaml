@@ -37,11 +37,8 @@
 						ClipToBounds="True"
 						CornerRadius="3">
 						<Panel x:Name="DeterminateRoot" Margin="1">
-							<Border
-								x:Name="PART_Indicator"
-								Margin="{TemplateBinding Padding}"
-								Background="{TemplateBinding Foreground}"
-								CornerRadius="2" />
+							<Border x:Name="PART_Indicator" Margin="{TemplateBinding Padding}"
+								Background="{TemplateBinding Foreground}" CornerRadius="2" />
 						</Panel>
 				</Border>
 			</ControlTemplate>

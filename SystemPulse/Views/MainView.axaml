@@ -3,24 +3,32 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:SystemPulse.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="600"
 			 xmlns:app="using:SystemPulse"
 			 xmlns:model="using:SystemPulse.Models"
              x:Class="SystemPulse.Views.MainView"
              x:DataType="vm:MainViewModel">
-	<StackPanel Margin="5">
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,100,0,0">
-			<PathIcon>
-				<PathIcon.Data>
-					<GeometryGroup>
-						<PathGeometry Figures="m179.643 359.286c99.043 0 179.643-80.6 179.643-179.643s-80.599-179.643-179.643-179.643-179.643 80.6-179.643 179.643 80.6 179.643 179.643 179.643zm0-335.334c85.869 0 155.691 69.821 155.691 155.691s-69.821 155.691-155.691 155.691-155.691-69.821-155.691-155.691 69.822-155.691 155.691-155.691z" />
-						<PathGeometry Figures="m232.039 236.89c2.216 1.796 4.85 2.635 7.485 2.635 3.533 0 7.006-1.557 9.341-4.491 4.132-5.15 3.293-12.695-1.856-16.827l-55.39-44.312v-90.061c0-6.587-5.389-11.976-11.976-11.976s-11.976 5.389-11.976 11.976v95.81c0 3.653 1.677 7.066 4.491 9.341z" />
-					</GeometryGroup>
-				</PathIcon.Data>
-			</PathIcon>
+	<StackPanel>
+		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Canvas Width="30" Height="30">
+				<Ellipse Width="{Binding $parent.Width}" Height="{Binding $parent.Height}" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5"/>
+				<Line StartPoint="15,15" EndPoint="15,9" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="2.5" StrokeLineCap="Round">
+					<Line.RenderTransform>
+						<RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding HourRotation}"/>
+					</Line.RenderTransform>
+				</Line>
+				<Line StartPoint="15,15" EndPoint="15,5" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5" StrokeLineCap="Round">
+					<Line.RenderTransform>
+						<RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding MinuteRotation}"/>
+					</Line.RenderTransform>
+					<Line.Effect>
+						<DropShadowEffect BlurRadius="2" Color="{DynamicResource SystemAltHighColor}" OffsetX="0" OffsetY="0" />
+					</Line.Effect>
+				</Line>
+			</Canvas>
 			<Label Content="Time" />
 		</StackPanel>
-		<Label Content="{Binding Now, StringFormat=HH:mm:ss}}" HorizontalAlignment="Center" />
+		<Label Content="{Binding Now, StringFormat=HH:mm:ss}}" HorizontalAlignment="Center" FontSize="18" />
 		<Label Content="{Binding Now, StringFormat=ddd\, dd.MM.yyyy}}" HorizontalAlignment="Center" />
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
@@ -47,25 +55,17 @@
 			</ItemsControl.ItemsPanel>
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<ItemsControl Margin="2" ItemsSource="{Binding LogicalCores}" x:DataType="model:PhysicalCores">
-						<!--
-						<ItemsControl.Styles>
-							<Style Selector="controls|LoadControl:nth-child(1)">
-								<Setter Property="CornerRadius" Value="10,10,0,0" />
-							</Style>
-							<Style Selector="controls|LoadControl:nth-last-child(1)">
-								<Setter Property="CornerRadius" Value="0,0,10,10" />
-							</Style>
-						</ItemsControl.Styles>
-						-->
+					<ItemsControl Margin="1" ItemsSource="{Binding LogicalCores}" x:DataType="model:PhysicalCores"
+								  BorderThickness="1" CornerRadius="3" BorderBrush="{DynamicResource SystemBaseHighColor}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
-								<StackPanel Orientation="Horizontal"/>
+								<StackPanel Orientation="Horizontal" />
 							</ItemsPanelTemplate>
 						</ItemsControl.ItemsPanel>
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<ProgressBar Width="18" Height="50" Classes="Load" Orientation="Vertical" x:DataType="model:LogicalCore"
+											 BorderThickness="0"
 									Value="{Binding LoadValue.Value}" Classes.isAlert="{Binding LoadValue.IsAlert}" ToolTip.Tip="{Binding LoadValue.Value, StringFormat=Core Usage: {0:0}%}" />
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
@@ -73,7 +73,7 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-		
+
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
 				<PathIcon.Data>
@@ -90,7 +90,7 @@
 			<Label Content="RAM" />
 		</StackPanel>
 		<ProgressBar Height="25" Classes="Load" Value="{Binding RamUsage.Value}" Classes.isAlert="{Binding RamUsage.IsAlert}" ToolTip.Tip="{Binding RamUsage.Value, StringFormat=Memory Usage: {0:0}%}" />
-		
+
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
 				<PathIcon.Data>
@@ -140,7 +140,7 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-		
+
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
 				<PathIcon.Data>
@@ -156,7 +156,7 @@
 			</PathIcon>
 			<Label Content="NETWORK" />
 		</StackPanel>
-		<Label Content="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" />
+		<Label Classes="Censor" Content="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" />
 		<ProgressBar Height="25" Classes="Load" Value="{Binding NetworkUsage.Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=Bandwidth}" ToolTip.Tip="{Binding NetworkUsage.Value, StringFormat=Network Usage: {0:0}bit/s. Good Luck reading that. Im not making a Converter for this}" />
 	</StackPanel>
 </UserControl>

@@ -1,29 +1,39 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Style Selector="StackPanel.Header">
-		<Setter Property="Margin" Value="0,30,0,5" />
+		<Setter Property="Margin" Value="0,25,0,7" />
+	</Style>
+	<Style Selector="StackPanel.Header > PathIcon">
+		<Setter Property="Width" Value="30" />
+		<Setter Property="Height" Value="30" />
 	</Style>
 	<Style Selector="StackPanel.Header > Label">
 		<Setter Property="FontSize" Value="20" />
 		<Setter Property="FontWeight" Value="Bold" />
 		<Setter Property="VerticalAlignment" Value="Center" />
-	</Style>
-	<Style Selector="StackPanel.Header > PathIcon">
-		<Setter Property="Width" Value="30" />
-		<Setter Property="Height" Value="30" />
-		<Setter Property="Margin" Value="0,0,5,0" />
+		<Setter Property="Margin" Value="5,0,0,0" />
 	</Style>
 
 	<Style Selector="Border.Load">
-		<Setter Property="BorderBrush" Value="White" />
+		<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseHighColor}" />
 		<Setter Property="BorderThickness" Value="1" />
 		<Setter Property="Padding" Value="1" />
 		<Setter Property="CornerRadius" Value="3" />
 	</Style>
+	<Style Selector="Label.Censor">
+		<Setter Property="Effect">
+			<Setter.Value>
+				<BlurEffect Radius="15" />
+			</Setter.Value>
+		</Setter>
+		<Style Selector="^:pointerover">
+			<Setter Property="Effect" Value="{x:Null}" />
+		</Style>
+	</Style>
 	<Style Selector="ProgressBar.Load">
-		<Setter Property="Foreground" Value="White" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
 		<Setter Property="Background" Value="Transparent" />
-		<Setter Property="BorderBrush" Value="White" />
+		<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseHighColor}" />
 		<Setter Property="BorderThickness" Value="1" />
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MinWidth" Value="0" />
@@ -33,7 +43,7 @@
 		<Setter Property="Transitions">
 			<Setter.Value>
 				<Transitions>
-					<DoubleTransition Property="Value" Duration="0:0:1"/>
+					<DoubleTransition Property="Value" Duration="0:0:1" Easing="QuadraticEaseInOut" />
 				</Transitions>
 			</Setter.Value>
 		</Setter>
@@ -43,7 +53,7 @@
 		<Setter Property="Foreground">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-					<GradientStop Color="#FFFFFF" Offset="0.85" />
+					<GradientStop Color="{DynamicResource SystemBaseHighColor}" Offset="0.9" />
 					<GradientStop Color="#C7253E" Offset="0.975" />
 				</LinearGradientBrush>
 			</Setter.Value>
@@ -53,7 +63,7 @@
 		<Setter Property="Foreground">
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
-					<GradientStop Color="#FFFFFF" Offset="0.85" />
+					<GradientStop Color="{DynamicResource SystemBaseHighColor}" Offset="0.9" />
 					<GradientStop Color="#C7253E" Offset="0.975" />
 				</LinearGradientBrush>
 			</Setter.Value>
