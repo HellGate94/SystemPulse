@@ -3,11 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:SystemPulse.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="600"
 			 xmlns:app="using:SystemPulse"
-			 xmlns:model="using:SystemPulse.Models"
+			 xmlns:model="using:SystemPulse.Models.Hardware"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="600"
+             xmlns:conv="using:SystemPulse.Converters"
              x:Class="SystemPulse.Views.MainView"
              x:DataType="vm:MainViewModel">
+	<UserControl.Resources>
+		<conv:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" />
+	</UserControl.Resources>
 	<StackPanel>
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<Canvas Width="30" Height="30">
@@ -28,8 +32,8 @@
 			</Canvas>
 			<Label Content="Time" />
 		</StackPanel>
-		<Label Content="{Binding Now, StringFormat=HH:mm:ss}}" HorizontalAlignment="Center" FontSize="18" />
-		<Label Content="{Binding Now, StringFormat=ddd\, dd.MM.yyyy}}" HorizontalAlignment="Center" />
+		<Label Content="{Binding Now, StringFormat=HH:mm:ss}}" HorizontalAlignment="Center" FontSize="18" PointerReleased="LabelPointerReleasedHandler" />
+		<Label Content="{Binding Now, StringFormat=ddd\, dd.MM.yyyy}}" HorizontalAlignment="Center" PointerReleased="LabelPointerReleasedHandler" />
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
 				<PathIcon.Data>
@@ -55,7 +59,7 @@
 			</ItemsControl.ItemsPanel>
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<ItemsControl Margin="1" ItemsSource="{Binding LogicalCores}" x:DataType="model:PhysicalCores"
+					<ItemsControl Margin="1" ItemsSource="{Binding LogicalCores}" x:DataType="model:PhysicalCore"
 								  BorderThickness="1" CornerRadius="3" BorderBrush="{DynamicResource SystemBaseHighColor}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -89,7 +93,7 @@
 			</PathIcon>
 			<Label Content="RAM" />
 		</StackPanel>
-		<ProgressBar Height="25" Classes="Load" Value="{Binding RamUsage.Value}" Classes.isAlert="{Binding RamUsage.IsAlert}" ToolTip.Tip="{Binding RamUsage.Value, StringFormat=Memory Usage: {0:0}%}" />
+		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Memory].Sensors}" Value="{Binding [Load/Memory].Value}" Classes.isAlert="{Binding [Load/Memory].IsAlert}" ToolTip.Tip="{Binding [Data/MemoryAvailable].Value, StringFormat=Free Space: {0:0.00} GB}" />
 
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
@@ -104,9 +108,9 @@
 			</PathIcon>
 			<Label Content="GPU" />
 		</StackPanel>
-		<ProgressBar Height="25" Classes="Load" Value="{Binding GpuUsage.Value}" Classes.isAlert="{Binding GpuUsage.IsAlert}" ToolTip.Tip="{Binding GpuUsage.Value, StringFormat=Graphics Usage: {0:0}%}" />
-		<ProgressBar Height="10" Margin="0,5,0,0" Classes="Load" Value="{Binding VramUsage.Value}" Classes.isAlert="{Binding VramUsage.IsAlert}" ToolTip.Tip="{Binding VramUsage.Value, StringFormat=Graphics Memory Usage: {0:0}%}" />
-
+		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}" ToolTip.Tip="{Binding Value, StringFormat=Graphics Usage: {0:0}%}" />
+		<ProgressBar Height="10" Margin="0,5,0,0" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors}" Value="{Binding [Load/GPUMemory].Value}" Classes.isAlert="{Binding [Load/GPUMemory].IsAlert}" ToolTip.Tip="{Binding [SmallData/GPUMemoryFree].Value, StringFormat=Free Space: {0}B, Converter={StaticResource HumanReadableByteSizeConverter}, ConverterParameter=2}" />
+		
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon>
 				<PathIcon.Data>
@@ -135,7 +139,7 @@
 							<ColumnDefinition Width="*" />
 						</Grid.ColumnDefinitions>
 						<Label Grid.Column="0" Content="{Binding Name}" VerticalAlignment="Center" />
-						<ProgressBar Grid.Column="1" Classes="Load" Value="{Binding Load.Value}" Classes.isAlert="{Binding Load.IsAlert}" ToolTip.Tip="{Binding Load.Value, StringFormat=Disk Usage: {0:0}%}" />
+						<ProgressBar Grid.Column="1" Classes="Load" Value="{Binding Sensors[Load].Value}" Classes.isAlert="{Binding Sensors[Load].IsAlert}" ToolTip.Tip="{Binding Sensors[Load/FreeSpace].Value, StringFormat=Free Space: {0:0.00}B, Converter={StaticResource HumanReadableByteSizeConverter}}" />
 					</Grid>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
@@ -156,7 +160,7 @@
 			</PathIcon>
 			<Label Content="NETWORK" />
 		</StackPanel>
-		<Label Classes="Censor" Content="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" />
-		<ProgressBar Height="25" Classes="Load" Value="{Binding NetworkUsage.Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=Bandwidth}" ToolTip.Tip="{Binding NetworkUsage.Value, StringFormat=Network Usage: {0:0}bit/s. Good Luck reading that. Im not making a Converter for this}" />
+		<Label Classes="Censor" Content="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" PointerReleased="LabelPointerReleasedHandler" />
+		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/DownloadSpeed]}" Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=Bandwidth}" ToolTip.Tip="{Binding Value, StringFormat=Network Usage: {0:0}B/s, Converter={StaticResource HumanReadableByteSizeConverter}}" />
 	</StackPanel>
 </UserControl>
