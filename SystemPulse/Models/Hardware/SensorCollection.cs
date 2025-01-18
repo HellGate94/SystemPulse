@@ -2,9 +2,7 @@
 using LibreHardwareMonitor.Hardware;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Versioning;
 
 namespace SystemPulse.Models.Hardware;
 

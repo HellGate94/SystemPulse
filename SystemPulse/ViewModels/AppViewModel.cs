@@ -5,7 +5,6 @@ using Injectio.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System;
-using System.Diagnostics;
 using System.Runtime.Versioning;
 
 namespace SystemPulse.ViewModels;

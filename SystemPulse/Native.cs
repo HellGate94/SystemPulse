@@ -1,11 +1,6 @@
-﻿using Avalonia.Platform;
-using Avalonia;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Avalonia;
+using Avalonia.Platform;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SystemPulse;
 public static partial class Native {
@@ -60,29 +55,35 @@ public static partial class Native {
         return SHAppBarMessage(ABM_REMOVE, ref appBarData) != nint.Zero;
     }
 
-    public static PixelRect SetAppBarPosition(nint appBarHandle, Screen targetScreen, Size size) {
+    public static PixelRect SetAppBarPosition(nint appBarHandle, Screen targetScreen, Size size, Side side) {
         var bounds = targetScreen.Bounds;
 
         var appBarData = new APPBARDATA {
             cbSize = Marshal.SizeOf<APPBARDATA>(),
             hWnd = appBarHandle,
-            uEdge = (int)ABEdge.Right,
-            rc = new RECT {
-                Left = bounds.Right - (int)size.Width,
-                Top = bounds.TopLeft.Y,
-                Right = bounds.Right,
-                Bottom = bounds.Bottom
-            }
+        };
+
+        SHAppBarMessage(ABM_NEW, ref appBarData);
+
+        appBarData.uEdge = side switch {
+            Side.Left => (uint)ABEdge.Left,
+            Side.Right or _ => (uint)ABEdge.Right,
+        };
+
+        PixelPoint lr = side switch {
+            Side.Left => new(bounds.X, bounds.X + (int)size.Width),
+            Side.Right or _ => new(bounds.Right - (int)size.Width, bounds.Right),
+        };
+        appBarData.rc = new RECT {
+            Left = lr.X,
+            Top = bounds.Y,
+            Right = lr.Y,
+            Bottom = bounds.Bottom
         };
 
         SHAppBarMessage(ABM_QUERYPOS, ref appBarData);
         SHAppBarMessage(ABM_SETPOS, ref appBarData);
 
         return new PixelRect(appBarData.rc.Left, appBarData.rc.Top, appBarData.rc.Right - appBarData.rc.Left, appBarData.rc.Bottom - appBarData.rc.Top);
-
-        // Set the window's position and size to match the app bar
-        //Position = new PixelPoint(appBarData.rc.Left, appBarData.rc.Top);
-        //Width = appBarData.rc.Right - appBarData.rc.Left;
-        //Height = appBarData.rc.Bottom - appBarData.rc.Top;
     }
 }
