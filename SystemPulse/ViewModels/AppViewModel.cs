@@ -1,14 +1,12 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
 using Injectio.Attributes;
-using Microsoft.Extensions.Logging;
 
 namespace SystemPulse.ViewModels;
 
 [RegisterTransient]
-public partial class AppViewModel(ILogger<AppViewModel> logger) : ViewModelBase {
+public partial class AppViewModel : ViewModelBase {
     private static SettingsWindow? _settingsWindow;
 
     [RelayCommand]

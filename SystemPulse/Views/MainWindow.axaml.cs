@@ -20,6 +20,7 @@ public partial class MainWindow : Window {
 
     protected override void OnOpened(EventArgs e) {
         base.OnOpened(e);
+
         RegisterAppBar();
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => UnregisterAppBar();
