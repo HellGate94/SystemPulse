@@ -1,52 +1,27 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
 using Injectio.Attributes;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
-using System;
-using System.Runtime.Versioning;
 
 namespace SystemPulse.ViewModels;
 
 [RegisterTransient]
-[SupportedOSPlatform("windows")]
 public partial class AppViewModel(ILogger<AppViewModel> logger) : ViewModelBase {
-    const string RUN_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-    const string APP_NAME = "SystemPulse";
+    private static SettingsWindow? _settingsWindow;
 
     [RelayCommand]
-    private void AddStartup() {
-        string appPath = Environment.ProcessPath;
-        try {
-            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RUN_KEY, true);
-            if (key == null) {
-                logger.LogError("Error accessing the registry.");
-                return;
-            }
-
-            key.SetValue(APP_NAME, appPath);
-            logger.LogInformation("Application added to startup.");
-        } catch (Exception ex) {
-            logger.LogError("An error occurred while trying to add the application to startup {ex}", ex);
+    private static void Settings() {
+        if (_settingsWindow == null || !_settingsWindow.IsVisible) {
+            _settingsWindow = new SettingsWindow();
+            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
+            _settingsWindow.Show();
+        } else {
+            _settingsWindow.Activate(); // Does not bring the Window to front for whatever reason...
         }
     }
 
-    [RelayCommand]
-    private void RemoveStartup() {
-        try {
-            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RUN_KEY, true);
-            if (key == null) {
-                logger.LogError("Error accessing the registry.");
-                return;
-            }
-
-            key.DeleteValue(APP_NAME);
-            logger.LogInformation("Application removed from startup.");
-        } catch (Exception ex) {
-            logger.LogError("An error occurred while trying to remove the application from startup {ex}", ex);
-        }
-    }
 
     [RelayCommand]
     private static void Exit() {

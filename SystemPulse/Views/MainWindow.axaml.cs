@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using System;
 
 namespace SystemPulse.Views;
@@ -12,6 +14,8 @@ public partial class MainWindow : Window {
 
     public MainWindow() {
         InitializeComponent();
+        if (!Design.IsDesignMode)
+            DataContext = Ioc.Default.GetService<ViewModels.MainViewModel>();
     }
 
     protected override void OnOpened(EventArgs e) {
@@ -35,7 +39,8 @@ public partial class MainWindow : Window {
     }
 
     private void RegisterAppBar() {
-        RegisterAppBar(Screens.All[Settings.Default.TargetScreen], Settings.Default.Side);
+        var settings = Settings.Default!;
+        RegisterAppBar(Screens.All[settings.TargetScreen], settings.Side);
     }
     private void RegisterAppBar(Screen targetScreen, Side side) {
         var bounds = targetScreen.Bounds;
@@ -49,8 +54,8 @@ public partial class MainWindow : Window {
             var rect = Native.SetAppBarPosition(_appBarHandle, targetScreen, new Size(Width, Height), side);
             Dispatcher.UIThread.Invoke(() => {
                 Position = rect.Position;
-                Width = rect.Width;
-                Height = rect.Height;
+                //Width = rect.Width / targetScreen.Scaling;
+                //Height = rect.Height / targetScreen.Scaling;
             }, DispatcherPriority.ApplicationIdle);
         }
     }
@@ -60,5 +65,8 @@ public partial class MainWindow : Window {
             Native.RemoveAppBar(_appBarHandle);
             _appBarRegistered = false;
         }
+    }
+    private void LabelPointerReleasedHandler(object sender, PointerReleasedEventArgs args) {
+        Clipboard!.SetTextAsync((sender as Label)!.Content as string);
     }
 }

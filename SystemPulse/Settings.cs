@@ -9,6 +9,9 @@ public enum Side {
     Right,
 }
 public interface ISettings : INotifyPropertyChanged {
+    [Option(DefaultValue = "https://api.ipify.org")]
+    string IPService { get; set; }
+
     [Option(DefaultValue = 50f * 1000000f / 8f)]
     float DownloadBandwidth { get; set; }
 

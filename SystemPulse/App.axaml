@@ -23,12 +23,7 @@
 			<TrayIcon Icon="/Assets/SystemPulse.ico" ToolTipText="System Pulse">
 				<TrayIcon.Menu>
 					<NativeMenu>
-						<NativeMenuItem Header="Settings">
-							<NativeMenu>
-								<NativeMenuItem Header="Add to Startup" Command="{Binding AddStartupCommand}" />
-								<NativeMenuItem Header="Remove from Startup" Command="{Binding RemoveStartupCommand}" />
-							</NativeMenu>
-						</NativeMenuItem>
+						<NativeMenuItem Header="Settings" Command="{Binding SettingsCommand}" />
 						<NativeMenuItemSeparator />
 						<NativeMenuItem Header="Exit" Command="{Binding ExitCommand}" />
 					</NativeMenu>

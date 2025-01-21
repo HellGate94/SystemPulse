@@ -12,16 +12,13 @@ using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Timers;
 using SystemPulse.Models.Hardware;
-using SystemPulse.Services;
 
 namespace SystemPulse.ViewModels;
 
 [RegisterTransient]
 [SupportedOSPlatform("windows")]
-public partial class MainViewModel : ViewModelBase {
-    private readonly string _ipServiceUrl = "https://api.ipify.org";
-
-    private readonly HardwareMonitorService _hwMonitor;
+public partial class MainViewModel : ViewModelBase, IDisposable {
+    private readonly Computer _computer;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HourRotation), nameof(MinuteRotation))]
@@ -38,22 +35,28 @@ public partial class MainViewModel : ViewModelBase {
     [ObservableProperty]
     private string _ipAddress = "";
 
-    public MainViewModel(HardwareMonitorService hwMonitor) {
-        _hwMonitor = hwMonitor;
+    public MainViewModel() {
+        _computer = new Computer {
+            IsCpuEnabled = true,
+            IsGpuEnabled = true,
+            IsMemoryEnabled = true,
+            IsNetworkEnabled = true,
+        };
+        _computer.Open();
 
-        var cpu = hwMonitor.Computer.Hardware.Where(h => h.HardwareType == HardwareType.Cpu).First();
+        var cpu = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Cpu).First();
         var cpuHardware = new CpuHardwareItem(cpu);
         Hardwares.Add(cpuHardware);
         PhysicalCores = cpuHardware.PhysicalCores;
 
         // =========================================================
 
-        var ram = hwMonitor.Computer.Hardware.Where(h => h.HardwareType == HardwareType.Memory).First();
+        var ram = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Memory).First();
         Hardwares.Add(new HardwareItem(ram));
 
         // =========================================================
 
-        var gpu = hwMonitor.Computer.Hardware.Where(h => h.HardwareType is HardwareType.GpuAmd or HardwareType.GpuIntel or HardwareType.GpuNvidia).First();
+        var gpu = _computer.Hardware.Where(h => h.HardwareType is HardwareType.GpuAmd or HardwareType.GpuIntel or HardwareType.GpuNvidia).First();
         gpu.Update();
         Hardwares.Add(new HardwareItem(gpu));
 
@@ -85,7 +88,7 @@ public partial class MainViewModel : ViewModelBase {
     private void SetupNetworkMonitoring() {
         var adapter = GetActiveNetworkAdapter();
         if (adapter is not null) {
-            var _net = _hwMonitor.Computer.Hardware.Where(h => h.HardwareType == HardwareType.Network && h.Name.Contains(adapter.Name, StringComparison.OrdinalIgnoreCase)).First();
+            var _net = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Network && h.Name.Contains(adapter.Name, StringComparison.OrdinalIgnoreCase)).First();
             Hardwares.Add(new HardwareItem(_net));
         }
     }
@@ -117,9 +120,13 @@ public partial class MainViewModel : ViewModelBase {
     private async Task GetExternalIpAsync() {
         using var httpClient = new HttpClient();
         try {
-            IpAddress = await httpClient.GetStringAsync(_ipServiceUrl);
+            IpAddress = await httpClient.GetStringAsync(Settings.Default!.IPService);
         } catch (Exception) {
             IpAddress = "";
         }
+    }
+
+    public void Dispose() {
+        _computer.Close();
     }
 }

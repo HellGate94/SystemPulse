@@ -31,7 +31,7 @@ public static partial class Native {
         public uint uCallbackMessage;
         public uint uEdge;
         public RECT rc;
-        public int lParam;
+        public nint lParam;
     }
 
     [LibraryImport("shell32.dll", SetLastError = true)]
@@ -71,8 +71,8 @@ public static partial class Native {
         };
 
         PixelPoint lr = side switch {
-            Side.Left => new(bounds.X, bounds.X + (int)size.Width),
-            Side.Right or _ => new(bounds.Right - (int)size.Width, bounds.Right),
+            Side.Left => new(bounds.X, bounds.X + (int)(size.Width * targetScreen.Scaling)),
+            Side.Right or _ => new(bounds.Right - (int)(size.Width * targetScreen.Scaling), bounds.Right),
         };
         appBarData.rc = new RECT {
             Left = lr.X,
