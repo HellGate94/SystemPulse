@@ -6,7 +6,7 @@
 		xmlns:app="using:SystemPulse"
 		xmlns:model="using:SystemPulse.Models.Hardware"
         xmlns:conv="using:SystemPulse.Converters"
-        mc:Ignorable="d" Width="180" d:DesignHeight="450"
+        mc:Ignorable="d" Width="180" d:DesignHeight="1080"
 		SystemDecorations="None" Background="{DynamicResource SystemAltMediumHighColor}"
 		ShowInTaskbar="False" ShowActivated="False" CanResize="False"
         x:Class="SystemPulse.Views.MainWindow" x:DataType="vm:MainViewModel"

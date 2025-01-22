@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
@@ -7,6 +6,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using Config.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Text.Json;
 using SystemPulse.Views;
@@ -17,9 +17,11 @@ public partial class App : Application {
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
+        ConfigureServices();
+        DataContext = Ioc.Default.GetService<ViewModels.AppViewModel>();
     }
 
-    public static void ConfigureServices() {
+    public void ConfigureServices() {
         var services = new ServiceCollection();
 
         services.AddLogging(builder => builder.AddDebug());
@@ -29,10 +31,10 @@ public partial class App : Application {
            .Build();
         settings.PropertyChanged += Settings_PropertyChanged;
         services.AddSingleton(settings);
-
         services.AddSystemPulse();
 
         Ioc.Default.ConfigureServices(services.BuildServiceProvider());
+        Resources[typeof(IServiceProvider)] = services;
     }
 
     private static void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
@@ -46,12 +48,8 @@ public partial class App : Application {
         BindingPlugins.DataValidators.RemoveAt(0);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-            if (!Design.IsDesignMode)
-                ConfigureServices();
             desktop.MainWindow = new MainWindow();
         }
-        if (!Design.IsDesignMode)
-            DataContext = Ioc.Default.GetService<ViewModels.AppViewModel>();
 
         base.OnFrameworkInitializationCompleted();
     }

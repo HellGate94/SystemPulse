@@ -14,12 +14,12 @@ public partial class MainWindow : Window {
 
     public MainWindow() {
         InitializeComponent();
-        if (!Design.IsDesignMode)
-            DataContext = Ioc.Default.GetService<ViewModels.MainViewModel>();
+        DataContext = Ioc.Default.GetService<ViewModels.MainViewModel>();
     }
 
     protected override void OnOpened(EventArgs e) {
         base.OnOpened(e);
+        if (Design.IsDesignMode) return;
 
         RegisterAppBar();
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
@@ -28,11 +28,13 @@ public partial class MainWindow : Window {
 
     protected override void OnClosing(WindowClosingEventArgs e) {
         base.OnClosing(e);
+        if (Design.IsDesignMode) return;
 
         UnregisterAppBar();
     }
 
     private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        if (Design.IsDesignMode) return;
         if (!(e.PropertyName is nameof(ISettings.TargetScreen) or nameof(ISettings.Side))) return;
 
         UnregisterAppBar();
