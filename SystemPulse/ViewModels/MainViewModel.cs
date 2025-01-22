@@ -1,24 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Injectio.Attributes;
-using LibreHardwareMonitor.Hardware;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Timers;
 using SystemPulse.Models.Hardware;
+using SystemPulse.Services;
 
 namespace SystemPulse.ViewModels;
 
 [RegisterTransient]
 [SupportedOSPlatform("windows")]
-public partial class MainViewModel : ViewModelBase, IDisposable {
-    private readonly Computer _computer;
+public partial class MainViewModel : ViewModelBase {
+    private readonly HardwareInfoService _hwInfoService;
+    private readonly ISettings _settings;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HourRotation), nameof(MinuteRotation))]
@@ -26,55 +24,19 @@ public partial class MainViewModel : ViewModelBase, IDisposable {
     public float HourRotation => Now.Hour / 12f * 360f;
     public float MinuteRotation => Now.Minute / 60f * 360f;
 
-    public HardwareCollection Hardwares { get; } = [];
-    public ObservableCollection<PhysicalCore> PhysicalCores { get; init; }
-
-    [ObservableProperty]
-    private ObservableCollection<Drive> _drives = [];
+    public HardwareCollection Hardwares => _hwInfoService.Hardwares;
+    public ObservableCollection<PhysicalCore> PhysicalCores => _hwInfoService.PhysicalCores;
+    public ObservableCollection<Drive> Drives => _hwInfoService.Drives;
 
     [ObservableProperty]
     private string _ipAddress = "";
 
-    public MainViewModel() {
-        _computer = new Computer {
-            IsCpuEnabled = true,
-            IsGpuEnabled = true,
-            IsMemoryEnabled = true,
-            IsNetworkEnabled = true,
-        };
-        _computer.Open();
-
-        var cpu = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Cpu).First();
-        var cpuHardware = new CpuHardwareItem(cpu);
-        Hardwares.Add(cpuHardware);
-        PhysicalCores = cpuHardware.PhysicalCores;
-
-        // =========================================================
-
-        var ram = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Memory).First();
-        Hardwares.Add(new HardwareItem(ram));
-
-        // =========================================================
-
-        var gpu = _computer.Hardware.Where(h => h.HardwareType is HardwareType.GpuAmd or HardwareType.GpuIntel or HardwareType.GpuNvidia).First();
-        gpu.Update();
-        Hardwares.Add(new HardwareItem(gpu));
-
-        // =========================================================
-
-        var drives = DriveInfo.GetDrives();
-        foreach (var drive in drives) {
-            _drives.Add(new Drive(drive));
-        }
-
-        // =========================================================
-
-        SetupNetworkMonitoring();
+    public MainViewModel(HardwareInfoService hwInfoService, ISettings settings) {
+        _hwInfoService = hwInfoService;
+        _settings = settings;
 
         NetworkChange.NetworkAddressChanged += async (sender, args) => await GetExternalIpAsync();
         _ = GetExternalIpAsync();
-
-        // =========================================================
 
         var chkDate = new Timer {
             Interval = 1000,
@@ -85,48 +47,19 @@ public partial class MainViewModel : ViewModelBase, IDisposable {
         UpdateSensors(null, null);
     }
 
-    private void SetupNetworkMonitoring() {
-        var adapter = GetActiveNetworkAdapter();
-        if (adapter is not null) {
-            var _net = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Network && h.Name.Contains(adapter.Name, StringComparison.OrdinalIgnoreCase)).First();
-            Hardwares.Add(new HardwareItem(_net));
-        }
-    }
-
-    static NetworkInterface? GetActiveNetworkAdapter() {
-        var interfaces = NetworkInterface.GetAllNetworkInterfaces()
-            .Where(nic =>
-                nic.OperationalStatus == OperationalStatus.Up &&
-                nic.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
-                nic.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
-                nic.GetIPProperties().GatewayAddresses.Any(g => g.Address.AddressFamily == AddressFamily.InterNetwork));
-
-        var activeInterface = interfaces.FirstOrDefault();
-        return activeInterface;
-    }
-
-    public void UpdateSensors(object? sender, ElapsedEventArgs e) {
-        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
-            Now = DateTime.Now;
-
-            Hardwares.Update();
-
-            foreach (var drive in Drives) {
-                drive.Update();
-            }
-        }, Avalonia.Threading.DispatcherPriority.Background);
-    }
-
     private async Task GetExternalIpAsync() {
         using var httpClient = new HttpClient();
         try {
-            IpAddress = await httpClient.GetStringAsync(Settings.Default!.IPService);
+            IpAddress = await httpClient.GetStringAsync(_settings.IPService);
         } catch (Exception) {
             IpAddress = "";
         }
     }
 
-    public void Dispose() {
-        _computer.Close();
+    public void UpdateSensors(object? sender, ElapsedEventArgs e) {
+        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+            Now = DateTime.Now;
+            _hwInfoService.Update();
+        }, Avalonia.Threading.DispatcherPriority.Background);
     }
 }

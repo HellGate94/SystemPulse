@@ -10,7 +10,7 @@
         Icon="/Assets/SystemPulse.ico"
         Title="SystemPulse Settings">
 	<Window.Resources>
-		<conv:MbitConverter x:Key="MbitConverter" />
+		<conv:MathConverter x:Key="MbitConverter" Formula="x / 125000" BackFormula="x * 125000" />
 	</Window.Resources>
 	<ScrollViewer>
 		<StackPanel Margin="10" Spacing="10">
