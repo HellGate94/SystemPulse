@@ -3,7 +3,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Config.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -17,8 +16,6 @@ public partial class App : Application {
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
-        ConfigureServices();
-        DataContext = Ioc.Default.GetService<ViewModels.AppViewModel>();
     }
 
     public void ConfigureServices() {
@@ -26,9 +23,13 @@ public partial class App : Application {
 
         services.AddLogging(builder => builder.AddDebug());
 
-        ISettings settings = new ConfigurationBuilder<ISettings>()
-           .UseJsonFile(SettingsFilePath)
-           .Build();
+        Settings settings;
+        if (File.Exists(SettingsFilePath)) {
+            var json = File.ReadAllText(SettingsFilePath);
+            settings = JsonSerializer.Deserialize<Settings>(json)!;
+        } else {
+            settings = new Settings();
+        }
         settings.PropertyChanged += Settings_PropertyChanged;
         services.AddSingleton(settings);
         services.AddSystemPulse();
@@ -46,6 +47,9 @@ public partial class App : Application {
         // Line below is needed to remove Avalonia data validation.
         // Without this line you will get duplicate validations from both Avalonia and CT
         BindingPlugins.DataValidators.RemoveAt(0);
+
+        ConfigureServices();
+        DataContext = Ioc.Default.GetService<ViewModels.AppViewModel>();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
             desktop.MainWindow = new MainWindow();

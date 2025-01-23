@@ -27,7 +27,7 @@ public partial class SettingsViewModel : ViewModelBase {
 
     private readonly ILogger<SettingsViewModel> _logger;
 
-    public ISettings Settings { get; }
+    public Settings Settings { get; }
     public IReadOnlyList<Screen> ScreenList { get; init; }
 
     [ObservableProperty]
@@ -36,7 +36,7 @@ public partial class SettingsViewModel : ViewModelBase {
     [ObservableProperty]
     private bool _runOnStartup;
 
-    public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettings settings) {
+    public SettingsViewModel(ILogger<SettingsViewModel> logger, Settings settings) {
         _logger = logger;
         Settings = settings;
 

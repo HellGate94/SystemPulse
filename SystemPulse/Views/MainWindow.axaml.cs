@@ -35,7 +35,7 @@ public partial class MainWindow : Window {
 
     private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
         if (Design.IsDesignMode) return;
-        if (!(e.PropertyName is nameof(ISettings.TargetScreen) or nameof(ISettings.Side))) return;
+        if (!(e.PropertyName is nameof(Settings.TargetScreen) or nameof(Settings.Side))) return;
 
         UnregisterAppBar();
         RegisterAppBar();

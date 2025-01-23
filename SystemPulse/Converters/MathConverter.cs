@@ -87,14 +87,22 @@ public class MathConverter : IValueConverter {
 
     private class Parser {
         private static readonly Dictionary<string, double> Constants = new() {
-            ["pi"] = Math.PI
+            ["pi"] = double.Pi,
+            ["inf"] = double.PositiveInfinity,
         };
 
         private static readonly Dictionary<string, Func<Expression, Expression>> Functions = new() {
             ["sqrt"] = arg => Expression.Call(typeof(double).GetMethod("Sqrt")!, arg),
+            ["abs"] = arg => Expression.Call(typeof(double).GetMethod("Abs")!, arg),
             ["sin"] = arg => Expression.Call(typeof(double).GetMethod("Sin")!, arg),
-            ["cos"] = arg => Expression.Call(typeof(double).GetMethod("Cos")!, arg),
+            ["ceil"] = arg => Expression.Call(typeof(double).GetMethod("Ceiling")!, arg),
+            ["floor"] = arg => Expression.Call(typeof(double).GetMethod("Floor")!, arg),
+            ["round"] = arg => Expression.Call(typeof(double).GetMethod("Round", [typeof(double)])!, arg),
+            ["trunc"] = arg => Expression.Call(typeof(double).GetMethod("Truncate")!, arg),
+            ["exp"] = arg => Expression.Call(typeof(double).GetMethod("Exp")!, arg),
             ["log"] = arg => Expression.Call(typeof(double).GetMethod("Log", [typeof(double)])!, arg),
+            ["cos"] = arg => Expression.Call(typeof(double).GetMethod("Cos")!, arg),
+            ["tan"] = arg => Expression.Call(typeof(double).GetMethod("Tan")!, arg),
         };
 
         private readonly IEnumerator<Token> _tokens;

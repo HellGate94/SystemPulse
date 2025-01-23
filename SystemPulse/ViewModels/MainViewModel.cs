@@ -16,7 +16,7 @@ namespace SystemPulse.ViewModels;
 [SupportedOSPlatform("windows")]
 public partial class MainViewModel : ViewModelBase {
     private readonly HardwareInfoService _hwInfoService;
-    private readonly ISettings _settings;
+    private readonly Settings _settings;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HourRotation), nameof(MinuteRotation))]
@@ -31,7 +31,7 @@ public partial class MainViewModel : ViewModelBase {
     [ObservableProperty]
     private string _ipAddress = "";
 
-    public MainViewModel(HardwareInfoService hwInfoService, ISettings settings) {
+    public MainViewModel(HardwareInfoService hwInfoService, Settings settings) {
         _hwInfoService = hwInfoService;
         _settings = settings;
 
