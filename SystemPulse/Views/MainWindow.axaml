@@ -13,8 +13,17 @@
         Icon="/Assets/SystemPulse.ico"
         Title="SystemPulse">
 	<Window.Resources>
-		<conv:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" />
+		<ResourceDictionary>
+			<conv:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" />
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Resources/ProgressBar.axaml" />
+				<ResourceInclude Source="/Resources/Icons.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
 	</Window.Resources>
+	<Window.Styles>
+		<StyleInclude Source="/Resources/Style.axaml" />
+	</Window.Styles>
 	<StackPanel Margin="10,75,10,0">
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<Canvas Width="30" Height="30">
