@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
@@ -8,11 +9,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Text.Json;
+using SystemPulse.Services;
 using SystemPulse.Views;
 
 namespace SystemPulse;
 public partial class App : Application {
     private const string SettingsFilePath = "settings.json";
+    private GlobalHotKeyService globalHotKeyService;
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
@@ -53,8 +56,19 @@ public partial class App : Application {
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
             desktop.MainWindow = new MainWindow();
+            globalHotKeyService = new GlobalHotKeyService(desktop.MainWindow);
+            desktop.Exit += Exit;
+            globalHotKeyService.RegisterHotKey(KeyModifier.Shift, VirtualKey.R, () => {
+                new OverlayWindow().Show();
+            });
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    private void Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e) {
+        globalHotKeyService.Dispose();
+        if (DataContext is IDisposable disposable)
+            disposable.Dispose();
     }
 }

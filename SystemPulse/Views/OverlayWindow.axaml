@@ -1,0 +1,118 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SystemPulse.ViewModels"
+		xmlns:app="using:SystemPulse"
+        mc:Ignorable="d"
+        x:Class="SystemPulse.OverlayWindow" x:DataType="vm:OverlayViewModel"
+		SizeToContent="WidthAndHeight" Background="Transparent"
+		Topmost="True" CanResize="False" Focusable="False" ShowInTaskbar="False" ShowActivated="False"
+        Title="OverlayWindow">
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Resources/ProgressRing.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Window.Styles>
+		<Style Selector="Label">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+
+			<Style Selector="^.Perf">
+				<Setter Property="Margin" Value="9,0,0,0" />
+			</Style>
+		</Style>
+		<Style Selector="app|ProgressRing.Perf">
+			<Setter Property="StartAngle" Value="90" />
+			<Setter Property="SweepAngle" Value="180" />
+			<Setter Property="BorderThickness" Value="4" />
+			<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
+			<Setter Property="Width" Value="25" />
+			<Setter Property="Height" Value="25" />
+			<Setter Property="HorizontalAlignment" Value="Left" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<!--
+			<Setter Property="Transitions">
+				<Setter.Value>
+					<Transitions>
+						<DoubleTransition Property="Value" Duration="0:0:1" Easing="QuadraticEaseInOut" />
+					</Transitions>
+				</Setter.Value>
+			</Setter>
+			-->
+		</Style>
+		<Style Selector="Border#Root">
+			<Setter Property="CornerRadius" Value="17.5" />
+			<Setter Property="Padding" Value="2.5" />
+			<!--
+			<Setter Property="Background" Value="{DynamicResource SystemAltMediumLowColor}" />
+			-->
+
+			<Style Selector="^ > StackPanel">
+				<Setter Property="Orientation" Value="Horizontal" />
+				<Setter Property="Spacing" Value="5" />
+
+				<Style Selector="^ > Border">
+					<Setter Property="CornerRadius" Value="15" />
+					<Setter Property="MinHeight" Value="30" />
+					<Setter Property="Padding" Value="2.5" />
+					<!--
+					<Setter Property="Background" Value="{DynamicResource SystemAltMediumLowColor}" />
+					-->
+					<Setter Property="Background" Value="#3000" />
+					<Style Selector="^ > StackPanel">
+						<Setter Property="Spacing" Value="5" />
+						<Style Selector="^ > Panel">
+							<Setter Property="Height" Value="25" />
+						</Style>
+					</Style>
+				</Style>
+			</Style>
+		</Style>
+	</Window.Styles>
+	<Border x:Name="Root">
+		<StackPanel>
+			<Border>
+				<StackPanel MinWidth="60">
+					<Panel>
+						<Label Content="{Binding Fps, StringFormat={}{0:0} FPS}" Margin="0" HorizontalAlignment="Right" />
+					</Panel>
+					<Panel>
+						<Label Content="{Binding FpsLow, StringFormat={}{0:0} Low}" Margin="0" HorizontalAlignment="Right" />
+					</Panel>
+				</StackPanel>
+			</Border>
+			<Border>
+				<StackPanel>
+					<Panel>
+						<app:ProgressRing Classes="Perf" Value="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal].Value}" />
+						<Label Classes="Perf" Content="CPU" />
+					</Panel>
+
+					<Panel IsVisible="True">
+						<app:ProgressRing Classes="Perf" Value="{Binding Hardwares[Memory].Sensors[Load/Memory].Value}" />
+						<Label Classes="Perf" Content="RAM" />
+					</Panel>
+				</StackPanel>
+			</Border>
+			<Border>
+				<StackPanel>
+					<Panel>
+						<app:ProgressRing Classes="Perf" Value="{Binding Hardwares[Gpu].Sensors[Load/GPUCore].Value}" />
+						<Label Classes="Perf" Content="GPU" />
+					</Panel>
+
+					<Panel IsVisible="True">
+						<app:ProgressRing Classes="Perf" Value="{Binding Hardwares[Gpu].Sensors[Load/GPUMemory].Value}" />
+						<Label Classes="Perf" Content="VRAM" />
+					</Panel>
+				</StackPanel>
+			</Border>
+		</StackPanel>
+	</Border>
+</Window>

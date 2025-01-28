@@ -26,10 +26,13 @@ public partial class MainWindow : Window {
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => UnregisterAppBar();
     }
 
-    protected override void OnClosing(WindowClosingEventArgs e) {
-        base.OnClosing(e);
-        if (Design.IsDesignMode) return;
+    protected override void OnClosed(EventArgs e) {
+        base.OnClosed(e);
 
+        if (DataContext is IDisposable disposable)
+            disposable.Dispose();
+
+        if (Design.IsDesignMode) return;
         UnregisterAppBar();
     }
 

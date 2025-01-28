@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using System.Timers;
 using SystemPulse.Models.Hardware;
 using SystemPulse.Services;
 
@@ -14,7 +13,7 @@ namespace SystemPulse.ViewModels;
 
 [RegisterTransient]
 [SupportedOSPlatform("windows")]
-public partial class MainViewModel : ViewModelBase {
+public partial class MainViewModel : ViewModelBase, IDisposable, IUpdatable {
     private readonly HardwareInfoService _hwInfoService;
     private readonly Settings _settings;
 
@@ -31,20 +30,18 @@ public partial class MainViewModel : ViewModelBase {
     [ObservableProperty]
     private string _ipAddress = "";
 
-    public MainViewModel(HardwareInfoService hwInfoService, Settings settings) {
+    public MainViewModel(HardwareInfoService hwInfoService, Settings settings, UpdateService updateService) {
         _hwInfoService = hwInfoService;
         _settings = settings;
 
         NetworkChange.NetworkAddressChanged += async (sender, args) => await GetExternalIpAsync();
         _ = GetExternalIpAsync();
 
-        var chkDate = new Timer {
-            Interval = 1000,
-            AutoReset = true,
-            Enabled = true
-        };
-        chkDate.Elapsed += UpdateSensors;
-        UpdateSensors(null, null);
+        updateService.Register(this, 1000);
+        Update();
+    }
+    public void Update() {
+        Now = DateTime.Now;
     }
 
     private async Task GetExternalIpAsync() {
@@ -56,10 +53,7 @@ public partial class MainViewModel : ViewModelBase {
         }
     }
 
-    public void UpdateSensors(object? sender, ElapsedEventArgs e) {
-        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
-            Now = DateTime.Now;
-            _hwInfoService.Update();
-        }, Avalonia.Threading.DispatcherPriority.Background);
+    public void Dispose() {
+        UpdateService.Default.Unregister(this);
     }
 }

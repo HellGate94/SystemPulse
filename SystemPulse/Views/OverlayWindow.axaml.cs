@@ -4,10 +4,10 @@ using System;
 
 namespace SystemPulse;
 
-public partial class SettingsWindow : Window {
-    public SettingsWindow() {
+public partial class OverlayWindow : Window {
+    public OverlayWindow() {
         InitializeComponent();
-        DataContext = Ioc.Default.GetService<ViewModels.SettingsViewModel>();
+        DataContext = Ioc.Default.GetService<ViewModels.OverlayViewModel>();
     }
 
     protected override void OnClosed(EventArgs e) {

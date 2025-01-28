@@ -1,8 +1,8 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:SystemPulse.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SystemPulse.ViewModels"
 		xmlns:app="using:SystemPulse"
 		xmlns:model="using:SystemPulse.Models.Hardware"
         xmlns:conv="using:SystemPulse.Converters"
@@ -46,8 +46,7 @@
 		</StackPanel>
 		<Label Content="{Binding Now, StringFormat=T}}" MinWidth="90" HorizontalAlignment="Center" FontSize="20" PointerReleased="LabelPointerReleasedHandler" />
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-			<Label Content="{Binding Now, StringFormat=ddd\,}}" HorizontalAlignment="Center" FontSize="16" />
-			<Label Content="{Binding Now, StringFormat=d}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="LabelPointerReleasedHandler" />
+			<Label Content="{Binding Now, StringFormat={}{0:ddd}\, {0:d}}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="LabelPointerReleasedHandler" />
 		</StackPanel>
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon Data="{StaticResource Cpu}" />

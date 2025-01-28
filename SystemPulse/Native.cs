@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 
 namespace SystemPulse;
 public static partial class Native {
-    public const int ABM_NEW = 0;
-    public const int ABM_REMOVE = 1;
-    public const int ABM_QUERYPOS = 2;
-    public const int ABM_SETPOS = 3;
+    private const int ABM_NEW = 0;
+    private const int ABM_REMOVE = 1;
+    private const int ABM_QUERYPOS = 2;
+    private const int ABM_SETPOS = 3;
 
-    public enum ABEdge {
+    private enum ABEdge {
         Left = 0,
         Top = 1,
         Right = 2,
@@ -17,7 +17,7 @@ public static partial class Native {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RECT {
+    private struct RECT {
         public int Left;
         public int Top;
         public int Right;
@@ -25,7 +25,7 @@ public static partial class Native {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct APPBARDATA {
+    private struct APPBARDATA {
         public int cbSize;
         public nint hWnd;
         public uint uCallbackMessage;
@@ -35,7 +35,7 @@ public static partial class Native {
     }
 
     [LibraryImport("shell32.dll", SetLastError = true)]
-    public static partial nint SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
+    private static partial nint SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
 
     public static bool CreateAppBar(nint appBarHandle) {
         var appBarData = new APPBARDATA {
@@ -86,4 +86,10 @@ public static partial class Native {
 
         return new PixelRect(appBarData.rc.Left, appBarData.rc.Top, appBarData.rc.Right - appBarData.rc.Left, appBarData.rc.Bottom - appBarData.rc.Top);
     }
+
+    [LibraryImport("user32.dll")]
+    public static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial uint GetWindowThreadProcessId(nint hWnd, out int processId);
 }

@@ -13,14 +13,14 @@ using SystemPulse.Models.Hardware;
 namespace SystemPulse.Services;
 
 [RegisterSingleton]
-public sealed partial class HardwareInfoService : ObservableObject, IDisposable {
+public sealed partial class HardwareInfoService : ObservableObject, IDisposable, IUpdatable {
     private readonly Computer _computer;
 
     public HardwareCollection Hardwares { get; } = [];
     public ObservableCollection<PhysicalCore> PhysicalCores { get; } = [];
     public ObservableCollection<Drive> Drives { get; } = [];
 
-    public HardwareInfoService() {
+    public HardwareInfoService(UpdateService updateService) {
         _computer = new Computer {
             IsCpuEnabled = true,
             IsGpuEnabled = true,
@@ -77,6 +77,9 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable 
             var net = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Network && h.Name.Contains(adapter.Name, StringComparison.OrdinalIgnoreCase)).First();
             Hardwares.Add(new HardwareItem(net));
         }
+
+        updateService.Register(this, 1000);
+        Update();
     }
 
     private static NetworkInterface? GetActiveNetworkAdapter() {
@@ -100,6 +103,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable 
     }
 
     public void Dispose() {
+        UpdateService.Default.Unregister(this);
         _computer.Close();
     }
 }
