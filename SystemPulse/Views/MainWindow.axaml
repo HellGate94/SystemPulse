@@ -15,6 +15,7 @@
 	<Window.Resources>
 		<ResourceDictionary>
 			<conv:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" />
+			<conv:ColorInterpolationConverter x:Key="ColorInterpolator" />
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="/Resources/ProgressBar.axaml" />
 				<ResourceInclude Source="/Resources/Icons.axaml" />
@@ -116,11 +117,26 @@
 			<Label Content="NETWORK" />
 		</StackPanel>
 		<Label Classes="Censor" Content="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" PointerReleased="LabelPointerReleasedHandler" />
+		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+			<PathIcon Data="{StaticResource DownArrow}" Height="20" Margin="0,0,20,0">
+				<PathIcon.Foreground>
+					<MultiBinding Converter="{StaticResource ColorInterpolator}">
+						<Binding Source="{Binding Hardwares[Network].Sensors[Throughput/DownloadSpeed].Value}"/>
+						<Binding Source="{Binding Source={x:Static app:Settings.Default}, Path=DownloadBandwidth}"/>
+						<Binding Source="{DynamicResource SystemBaseHighColor}"/>
+						<Binding Source="{DynamicResource SystemBaseLowColor}"/>
+					</MultiBinding>
+				</PathIcon.Foreground>
+			</PathIcon>
+			<PathIcon Data="{StaticResource UpArrow}" />
+		</StackPanel>
+		<!--
 		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/DownloadSpeed]}"
 					 Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=DownloadBandwidth}"
 					 ToolTip.Tip="{Binding Value, StringFormat=Download: {0:0}B/s, Converter={StaticResource HumanReadableByteSizeConverter}}" />
 		<ProgressBar Height="10" Margin="0,5,0,0" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/UploadSpeed]}"
 					 Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=UploadBandwidth}"
 					 ToolTip.Tip="{Binding Value, StringFormat=Upload: {0:0}B/s, Converter={StaticResource HumanReadableByteSizeConverter}}" />
+		-->
 	</StackPanel>
 </Window>

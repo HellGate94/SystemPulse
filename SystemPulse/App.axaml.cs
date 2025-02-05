@@ -58,7 +58,7 @@ public partial class App : Application {
             desktop.MainWindow = new MainWindow();
             globalHotKeyService = new GlobalHotKeyService(desktop.MainWindow);
             desktop.Exit += Exit;
-            globalHotKeyService.RegisterHotKey(KeyModifier.Shift, VirtualKey.R, () => {
+            globalHotKeyService.RegisterHotKey(KeyModifier.Alt, VirtualKey.R, () => {
                 new OverlayWindow().Show();
             });
         }

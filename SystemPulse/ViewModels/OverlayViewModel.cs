@@ -1,11 +1,10 @@
 ﻿using Avalonia.Controls;
 using CircularBuffer;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Dia2Lib;
 using Injectio.Attributes;
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
@@ -23,15 +22,18 @@ public partial class OverlayViewModel : ViewModelBase, IDisposable, IUpdatable {
 
     //event codes (https://github.com/GameTechDev/PresentMon/blob/40ee99f437bc1061a27a2fc16a8993ee8ce4ebb5/PresentData/PresentMonTraceConsumer.cpp)
     public const ushort EventID_DxgiPresentStart = 42;
+    //public const int EventID_D3D9PresentStart = 1;
+
     private const double maxTimeDelta = 1000d;
     private const int maxBufferSize = 1000;
 
     //ETW provider codes
     public static readonly Guid DXGI_provider = Guid.Parse("{CA11C036-0102-4A2D-A6AD-F03CFED5D3C9}");
+    //public static readonly Guid D3D9_provider = Guid.Parse("{783ACA0A-790E-4D7F-8451-AA850511C6B9}");
+    //public static readonly Guid DxgKrnl_provider = Guid.Parse("{802ec45a-1e99-4b83-9920-87c98277ba9d}");
 
     TraceEventSession session;
     int targetPid;
-    object sync = new object();
 
     CircularBuffer<double> frametimes = new(maxBufferSize);
     double[] frametimeBuffer = new double[maxBufferSize];
@@ -46,9 +48,12 @@ public partial class OverlayViewModel : ViewModelBase, IDisposable, IUpdatable {
     public OverlayViewModel(HardwareInfoService hwInfoService, UpdateService updateService) {
         _hwInfoService = hwInfoService;
         if (Design.IsDesignMode) return;
+        var dwmid = Process.GetProcessesByName("dwm").First().Id;
 
         var targetWindow = Native.GetForegroundWindow();
         Native.GetWindowThreadProcessId(targetWindow, out targetPid);
+
+        // https://github.com/Danil0v3s/CleanMeter/blob/main/HardwareMonitor/HardwareMonitor/PresentMon/PresentMonPoller.cs
 
         session = new TraceEventSession("SystemPulse") {
             StopOnDispose = true,
@@ -56,8 +61,8 @@ public partial class OverlayViewModel : ViewModelBase, IDisposable, IUpdatable {
         session.EnableProvider("Microsoft-Windows-DXGI");
 
         session.Source.AllEvents += data => {
-            if (data.ProcessID == targetPid) {
-                if (data.ProviderGuid == DXGI_provider && (ushort)data.ID == EventID_DxgiPresentStart) {
+            if (data.ProcessID == targetPid /* || data.ProcessID == dwmid*/) {
+                if ((data.ProviderGuid == DXGI_provider && (ushort)data.ID == EventID_DxgiPresentStart)) {
                     var delta = data.TimeStampRelativeMSec - lastTime;
                     frametimes.PushFront(delta);
                     lastTime = data.TimeStampRelativeMSec;
