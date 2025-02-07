@@ -72,7 +72,7 @@ public partial class MainWindow : Window {
             _appBarRegistered = false;
         }
     }
-    private void LabelPointerReleasedHandler(object sender, PointerReleasedEventArgs args) {
-        Clipboard!.SetTextAsync((sender as Label)!.Content as string);
+    private void TextPointerReleasedHandler(object sender, PointerReleasedEventArgs args) {
+        Clipboard?.SetTextAsync(((TextBlock)sender).Text);
     }
 }

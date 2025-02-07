@@ -20,7 +20,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
     public ObservableCollection<PhysicalCore> PhysicalCores { get; } = [];
     public ObservableCollection<Drive> Drives { get; } = [];
 
-    public HardwareInfoService(UpdateService updateService) {
+    public HardwareInfoService(UpdateService updateService, Settings settings) {
         _computer = new Computer {
             IsCpuEnabled = true,
             IsGpuEnabled = true,
@@ -71,8 +71,9 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
 
         // =========================================================
 
-        var gpu = _computer.Hardware.Where(h => h.HardwareType is HardwareType.GpuAmd or HardwareType.GpuIntel or HardwareType.GpuNvidia).First();
-        gpu.Update();
+        var gpu = _computer.Hardware.Where(h => h.HardwareType is HardwareType.GpuAmd or HardwareType.GpuIntel or HardwareType.GpuNvidia)
+            .OrderByDescending(h => h.Sensors.First(s => s.Name == "GPU Memory Total").Value) // Take the one with the most memory to filter out integrated Gpu
+            .First();
         Hardwares.Add(new HardwareItem(gpu));
 
         // =========================================================
@@ -90,7 +91,14 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
             Hardwares.Add(new HardwareItem(net));
         }
 
-        updateService.Register(this, 1000);
+        settings.PropertyChanged += (sender, e) => {
+            if (e.PropertyName == nameof(Settings.RefreshInterval)) {
+                updateService.Unregister(this);
+                updateService.Register(this, Settings.Default!.RefreshInterval);
+            }
+        };
+
+        updateService.Register(this, settings.RefreshInterval);
         Update();
     }
 
@@ -115,7 +123,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
     }
 
     public void Dispose() {
-        UpdateService.Default!.Unregister(this);
+        UpdateService.Default?.Unregister(this);
         _computer.Close();
     }
 }

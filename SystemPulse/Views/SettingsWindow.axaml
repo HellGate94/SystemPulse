@@ -5,44 +5,47 @@
         xmlns:vm="using:SystemPulse.ViewModels"
 		xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:conv="using:SystemPulse.Converters"
-        mc:Ignorable="d" Width="300" Height="420"
+        mc:Ignorable="d" SizeToContent="Height" Width="300"
         x:Class="SystemPulse.SettingsWindow" x:DataType="vm:SettingsViewModel"
         Icon="/Assets/SystemPulse.ico"
         Title="SystemPulse Settings">
 	<Window.Resources>
 		<conv:MathConverter x:Key="MbitConverter" Formula="x / 125000" BackFormula="x * 125000" />
 	</Window.Resources>
-	<ScrollViewer>
-		<StackPanel Margin="10" Spacing="10">
-			<StackPanel>
-				<Label Content="External IP Service:" />
-				<AutoCompleteBox Text="{Binding Settings.IPService, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" ItemsSource="{Binding DefaultIPServices}" FilterMode="Contains" />
-			</StackPanel>
-
-			<StackPanel>
-				<Label Content="Screen:" />
-				<ComboBox SelectedIndex="{Binding Settings.TargetScreen}" ItemsSource="{Binding ScreenList}" DisplayMemberBinding="{Binding DisplayName}" HorizontalAlignment="Stretch" />
-			</StackPanel>
-
-			<StackPanel>
-				<Label Content="Screen Side:" />
-				<ComboBox SelectedIndex="{Binding Settings.Side}" ItemsSource="{Binding Sides}" HorizontalAlignment="Stretch" />
-			</StackPanel>
-
-			<StackPanel>
-				<Label Content="Download Bandwidth: (Mbit/s)" />
-				<NumericUpDown Value="{Binding Settings.DownloadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
-			</StackPanel>
-
-			<StackPanel>
-				<Label Content="Upload Bandwidth: (Mbit/s)" />
-				<NumericUpDown Value="{Binding Settings.UploadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
-			</StackPanel>
-
-			<StackPanel>
-				<Label Content="Autostart:" />
-				<CheckBox IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
-			</StackPanel>
+	<StackPanel Margin="10" Spacing="10">
+        <StackPanel>
+            <TextBlock Text="Refresh Interval (ms)" Margin="2" />
+            <NumericUpDown Value="{Binding Settings.RefreshInterval, Mode=TwoWay}" Increment="500" Minimum="500" />
+        </StackPanel>
+            
+		<StackPanel>
+			<TextBlock Text="External IP Service:" Margin="2" />
+			<AutoCompleteBox Text="{Binding Settings.IPService, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" ItemsSource="{Binding DefaultIPServices}" FilterMode="Contains" />
 		</StackPanel>
-	</ScrollViewer>
+
+		<StackPanel>
+			<TextBlock Text="Screen:" Margin="2" />
+			<ComboBox SelectedIndex="{Binding Settings.TargetScreen}" ItemsSource="{Binding ScreenList}" DisplayMemberBinding="{Binding DisplayName}" HorizontalAlignment="Stretch" />
+		</StackPanel>
+
+		<StackPanel>
+			<TextBlock Text="Screen Side:" Margin="2" />
+			<ComboBox SelectedIndex="{Binding Settings.Side}" ItemsSource="{Binding Sides}" HorizontalAlignment="Stretch" />
+		</StackPanel>
+
+		<StackPanel>
+			<TextBlock Text="Download Bandwidth: (Mbit/s)" Margin="2" />
+			<NumericUpDown Value="{Binding Settings.DownloadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
+		</StackPanel>
+
+		<StackPanel>
+			<TextBlock Text="Upload Bandwidth: (Mbit/s)" Margin="2" />
+			<NumericUpDown Value="{Binding Settings.UploadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
+		</StackPanel>
+
+		<StackPanel>
+			<TextBlock Text="Autostart:" Margin="2" />
+			<CheckBox IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
+		</StackPanel>
+	</StackPanel>
 </Window>

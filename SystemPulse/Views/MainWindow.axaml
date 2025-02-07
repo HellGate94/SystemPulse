@@ -26,7 +26,7 @@
 		<StyleInclude Source="/Resources/Style.axaml" />
 	</Window.Styles>
 	<StackPanel Margin="10,75,10,0">
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+		<StackPanel Classes="Header">
 			<Canvas Width="30" Height="30">
 				<Ellipse Width="30" Height="30" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5"/>
 				<Line StartPoint="15,15" EndPoint="15,9" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="2.5" StrokeLineCap="Round">
@@ -43,15 +43,13 @@
 					</Line.Effect>
 				</Line>
 			</Canvas>
-			<Label Content="Time" />
+            <TextBlock Text="Time" />
 		</StackPanel>
-		<Label Content="{Binding Now, StringFormat=T}}" MinWidth="90" HorizontalAlignment="Center" FontSize="20" PointerReleased="LabelPointerReleasedHandler" />
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-			<Label Content="{Binding Now, StringFormat={}{0:ddd}\, {0:d}}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="LabelPointerReleasedHandler" />
-		</StackPanel>
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+		<TextBlock Text="{Binding Now, StringFormat=T}}" MinWidth="90" HorizontalAlignment="Center" FontSize="20" PointerReleased="TextPointerReleasedHandler" />
+		<TextBlock Text="{Binding Now, StringFormat={}{0:ddd}\, {0:d}}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="TextPointerReleasedHandler" />
+		<StackPanel Classes="Header">
 			<PathIcon Data="{StaticResource Cpu}" />
-			<Label Content="CPU" />
+			<TextBlock Text="CPU" />
 		</StackPanel>
 		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
 					 ToolTip.Tip="{Binding Value, StringFormat=Cpu Usage: {0:0.00}%}" />
@@ -80,43 +78,43 @@
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+		<StackPanel Classes="Header">
 			<PathIcon Data="{StaticResource Ram}" />
-			<Label Content="RAM" />
+			<TextBlock Text="RAM" />
 		</StackPanel>
 		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Memory].Sensors}" Value="{Binding [Load/Memory].Value}" Classes.isAlert="{Binding [Load/Memory].IsAlert}"
 					 ToolTip.Tip="{Binding [Data/MemoryAvailable].Value, StringFormat=Free Space: {0:0.00} GB}" />
 
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+		<StackPanel Classes="Header">
 			<PathIcon Data="{StaticResource Gpu}" />
-			<Label Content="GPU" />
+			<TextBlock Text="GPU" />
 		</StackPanel>
 		<ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
 					 ToolTip.Tip="{Binding Value, StringFormat=Graphics Usage: {0:0}%}" />
 		<ProgressBar Height="10" Margin="0,5,0,0" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors}" Value="{Binding [Load/GPUMemory].Value}" Classes.isAlert="{Binding [Load/GPUMemory].IsAlert}"
 					 ToolTip.Tip="{Binding [SmallData/GPUMemoryFree].Value, StringFormat=Free Space: {0}B, Converter={StaticResource HumanReadableByteSizeConverter}, ConverterParameter=2}" />
 
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+		<StackPanel Classes="Header">
 			<PathIcon Data="{StaticResource Storage}" />
-			<Label Content="STORAGE" />
+			<TextBlock Text="STORAGE" />
 		</StackPanel>
 		<ItemsControl ItemsSource="{Binding Drives}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Grid Margin="0,0,0,5" ColumnDefinitions="25, *">
-						<Label Grid.Column="0" Content="{Binding Name}" VerticalAlignment="Center" FontSize="16" />
-						<ProgressBar Grid.Column="1" Classes="Load" Value="{Binding Sensors[Load].Value}" Classes.isAlert="{Binding Sensors[Load].IsAlert}"
+                        <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center" FontSize="16" />
+						<ProgressBar Height="25" Grid.Column="1" Classes="Load" Value="{Binding Sensors[Load].Value}" Classes.isAlert="{Binding Sensors[Load].IsAlert}"
 									 ToolTip.Tip="{Binding Sensors[Load/FreeSpace].Value, StringFormat=Free Space: {0:0.00}B, Converter={StaticResource HumanReadableByteSizeConverter}}" />
 					</Grid>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 
-		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
+		<StackPanel Classes="Header">
 			<PathIcon Data="{StaticResource Network}" />
-			<Label Content="NETWORK" />
+			<TextBlock Text="NETWORK" />
 		</StackPanel>
-		<Label Classes="Censor" Content="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" PointerReleased="LabelPointerReleasedHandler" />
+        <TextBlock Classes="Censor" Margin="0,0,0,5" Text="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" PointerReleased="TextPointerReleasedHandler" />
 		<!--
 		<StackPanel Classes="Header" Orientation="Horizontal" HorizontalAlignment="Center">
 			<PathIcon Data="{StaticResource DownArrow}" Height="20" Margin="0,0,20,0">

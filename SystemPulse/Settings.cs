@@ -13,6 +13,10 @@ public partial class Settings : ObservableValidator {
     public static Settings? Default => Ioc.Default.GetService<Settings>();
 
     [ObservableProperty, NotifyDataErrorInfo]
+    [Range(500, 10000)]
+    private int _refreshInterval = 1000;
+
+    [ObservableProperty, NotifyDataErrorInfo]
     [Url]
     private string _iPService = "https://api.ipify.org";
 
