@@ -31,7 +31,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
 
         // =========================================================
 
-        var cpu = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Cpu).First() as GenericCpu;
+        var cpu = (GenericCpu)_computer.Hardware.Where(h => h.HardwareType == HardwareType.Cpu).First();
         var cpuHardware = new HardwareItem(cpu);
         Hardwares.Add(cpuHardware);
 
@@ -103,7 +103,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
     }
 
     public void Dispose() {
-        UpdateService.Default.Unregister(this);
+        UpdateService.Default!.Unregister(this);
         _computer.Close();
     }
 }

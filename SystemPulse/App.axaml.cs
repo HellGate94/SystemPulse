@@ -15,7 +15,6 @@ using SystemPulse.Views;
 namespace SystemPulse;
 public partial class App : Application {
     private const string SettingsFilePath = "settings.json";
-    private GlobalHotKeyService globalHotKeyService;
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
@@ -56,18 +55,12 @@ public partial class App : Application {
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
             desktop.MainWindow = new MainWindow();
-            globalHotKeyService = new GlobalHotKeyService(desktop.MainWindow);
-            desktop.Exit += Exit;
-            globalHotKeyService.RegisterHotKey(KeyModifier.Alt, VirtualKey.R, () => {
-                new OverlayWindow().Show();
-            });
         }
 
         base.OnFrameworkInitializationCompleted();
     }
     
     private void Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e) {
-        globalHotKeyService.Dispose();
         if (DataContext is IDisposable disposable)
             disposable.Dispose();
     }

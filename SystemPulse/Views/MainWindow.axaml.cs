@@ -22,7 +22,7 @@ public partial class MainWindow : Window {
         if (Design.IsDesignMode) return;
 
         RegisterAppBar();
-        Settings.Default.PropertyChanged += Settings_PropertyChanged;
+        Settings.Default!.PropertyChanged += Settings_PropertyChanged;
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => UnregisterAppBar();
     }
 

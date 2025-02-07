@@ -54,6 +54,6 @@ public partial class MainViewModel : ViewModelBase, IDisposable, IUpdatable {
     }
 
     public void Dispose() {
-        UpdateService.Default.Unregister(this);
+        UpdateService.Default!.Unregister(this);
     }
 }

@@ -52,7 +52,7 @@ public class MathConverter : IValueConverter {
                 int start = i;
                 while (i < formula.Length && char.IsLetter(formula[i]))
                     i++;
-                var name = formula.Substring(start, i - start);
+                var name = formula[start..i];
                 yield return new Token(TokenType.Identifier, name);
             } else {
                 yield return c switch {
@@ -111,7 +111,7 @@ public class MathConverter : IValueConverter {
         private Token? _nextToken;
 
         Token Peek() {
-            if (_nextToken == null) {
+            if (_nextToken is null) {
                 _tokens.MoveNext();
                 _nextToken = _tokens.Current;
             }
@@ -134,12 +134,12 @@ public class MathConverter : IValueConverter {
         public Parser(IEnumerable<Token> tokens, ParameterExpression parameter) {
             _tokens = tokens.GetEnumerator();
             _parameter = parameter;
+            _currentToken = Peek();
         }
 
         public Expression Parse() {
             return ParseExpression();
         }
-
 
         private Expression ParseExpression() => ParseAdditionExpression();
 
@@ -182,7 +182,7 @@ public class MathConverter : IValueConverter {
                 _ => null,
             };
 
-            if (mbop is not { } op)
+            if (mbop is null)
                 return ParsePrimaryExpression();
 
             var opToken = Advance();
@@ -207,19 +207,12 @@ public class MathConverter : IValueConverter {
         private Expression ParsePrimaryExpression() {
             var token = Advance();
 
-            switch (token.Type) {
-                case TokenType.NumberLiteral:
-                    return Expression.Constant(double.Parse(token.Value));
-
-                case TokenType.Identifier:
-                    return ParseIdentifier(token);
-
-                case TokenType.ParenLeft:
-                    return ParseParenExpression(token);
-
-                default:
-                    throw new Exception($"Expected an expression, got a {token} token.");
-            }
+            return token.Type switch {
+                TokenType.NumberLiteral => Expression.Constant(double.Parse(token.Value!)),
+                TokenType.Identifier => ParseIdentifier(token),
+                TokenType.ParenLeft => ParseParenExpression(token),
+                _ => throw new Exception($"Expected an expression, got a {token} token."),
+            };
         }
         private Expression ParseIdentifier(Token token) {
             string iden = token.Value!;

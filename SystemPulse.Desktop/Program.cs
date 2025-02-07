@@ -10,7 +10,7 @@ class Program {
     // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args) {
-        Directory.SetCurrentDirectory(Path.GetDirectoryName(Environment.ProcessPath));
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(Environment.ProcessPath)!);
         BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
     }
