@@ -12,7 +12,6 @@ public enum Side {
 public partial class Settings : ObservableValidator {
     public static Settings? Default => Ioc.Default.GetService<Settings>();
 
-
     [ObservableProperty, NotifyDataErrorInfo]
     [Url]
     private string _iPService = "https://api.ipify.org";

@@ -41,11 +41,23 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
             .Where(s => s.Index >= 2) // 0 is total load, 1 is core max
             .ToArray();
 
-        for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx++) {
+        //https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/issues/1632
+        //for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx++) {
+        //    var pcpu = cpu.CpuId[coreIdx];
+        //    PhysicalCore physicalCore = new(coreIdx);
+        //    for (int threadIdx = 0; threadIdx < pcpu.Length; threadIdx++) {
+        //        var thread = cpu.CpuId[coreIdx][threadIdx];
+        //        LogicalCore logicalCore = new(thread.Thread, cpuLoadSensors[thread.Thread]);
+        //        physicalCore.LogicalCores.Add(logicalCore);
+        //    }
+        //    PhysicalCores.Add(physicalCore);
+        //}
+
+        for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx += 2) {
             var pcpu = cpu.CpuId[coreIdx];
             PhysicalCore physicalCore = new(coreIdx);
-            for (int threadIdx = 0; threadIdx < pcpu.Length; threadIdx++) {
-                var thread = cpu.CpuId[coreIdx][threadIdx];
+            for (int threadIdx = 0; threadIdx < 2; threadIdx++) {
+                var thread = cpu.CpuId[coreIdx + threadIdx][0];
                 LogicalCore logicalCore = new(thread.Thread, cpuLoadSensors[thread.Thread]);
                 physicalCore.LogicalCores.Add(logicalCore);
             }
