@@ -1,95 +1,94 @@
 ﻿using Avalonia;
 using Avalonia.Platform;
+using Microsoft.Win32.SafeHandles;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Threading;
+using Windows.Win32.UI.Shell;
 
 namespace SystemPulse;
-public static partial class Native {
-    private const int ABM_NEW = 0;
-    private const int ABM_REMOVE = 1;
-    private const int ABM_QUERYPOS = 2;
-    private const int ABM_SETPOS = 3;
 
-    private enum ABEdge {
-        Left = 0,
-        Top = 1,
-        Right = 2,
-        Bottom = 3
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct RECT {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct APPBARDATA {
-        public int cbSize;
-        public nint hWnd;
-        public uint uCallbackMessage;
-        public uint uEdge;
-        public RECT rc;
-        public nint lParam;
-    }
-
-    [LibraryImport("shell32.dll", SetLastError = true)]
-    private static partial nint SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
+public static class Native {
+    private const uint ABM_NEW = 0;
+    private const uint ABM_REMOVE = 1;
+    private const uint ABM_QUERYPOS = 2;
+    private const uint ABM_SETPOS = 3;
+    private const uint ABM_GETSTATE = 4;
+    private const uint ABM_GETTASKBARPOS = 5;
+    private const uint ABM_ACTIVATE = 6;
+    private const uint ABM_GETAUTOHIDEBAR = 7;
+    private const uint ABM_SETAUTOHIDEBAR = 8;
+    private const uint ABM_WINDOWPOSCHANGED = 9;
+    private const uint ABM_SETSTATE = 10;
+    private const uint ABM_GETAUTOHIDEBAREX = 11;
+    private const uint ABM_SETAUTOHIDEBAREX = 12;
 
     public static bool CreateAppBar(nint appBarHandle) {
         var appBarData = new APPBARDATA {
-            cbSize = Marshal.SizeOf<APPBARDATA>(),
-            hWnd = appBarHandle,
+            cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
+            hWnd = (HWND)appBarHandle,
         };
 
-        return SHAppBarMessage(ABM_NEW, ref appBarData) != nint.Zero;
+        return PInvoke.SHAppBarMessage(ABM_NEW, ref appBarData) != nuint.Zero;
     }
 
     public static bool RemoveAppBar(nint appBarHandle) {
         var appBarData = new APPBARDATA {
-            cbSize = Marshal.SizeOf<APPBARDATA>(),
-            hWnd = appBarHandle,
+            cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
+            hWnd = (HWND)appBarHandle,
         };
 
-        return SHAppBarMessage(ABM_REMOVE, ref appBarData) != nint.Zero;
+        return PInvoke.SHAppBarMessage(ABM_REMOVE, ref appBarData) != nuint.Zero;
     }
 
     public static PixelRect SetAppBarPosition(nint appBarHandle, Screen targetScreen, Size size, Side side) {
-        var bounds = targetScreen.Bounds;
-
         var appBarData = new APPBARDATA {
-            cbSize = Marshal.SizeOf<APPBARDATA>(),
-            hWnd = appBarHandle,
+            cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
+            hWnd = (HWND)appBarHandle,
         };
-
-        SHAppBarMessage(ABM_NEW, ref appBarData);
 
         appBarData.uEdge = side switch {
-            Side.Left => (uint)ABEdge.Left,
-            Side.Right or _ => (uint)ABEdge.Right,
+            Side.Left => 0,
+            Side.Right or _ => 2,
         };
 
+        var bounds = targetScreen.Bounds;
         PixelPoint lr = side switch {
             Side.Left => new(bounds.X, bounds.X + (int)(size.Width * targetScreen.Scaling)),
             Side.Right or _ => new(bounds.Right - (int)(size.Width * targetScreen.Scaling), bounds.Right),
         };
-        appBarData.rc = new RECT {
-            Left = lr.X,
-            Top = bounds.Y,
-            Right = lr.Y,
-            Bottom = bounds.Bottom
-        };
+        appBarData.rc = new RECT(lr.X, bounds.Y, lr.Y, bounds.Bottom);
 
-        SHAppBarMessage(ABM_QUERYPOS, ref appBarData);
-        SHAppBarMessage(ABM_SETPOS, ref appBarData);
+        //PInvoke.SHAppBarMessage(ABM_QUERYPOS, ref appBarData);
+        PInvoke.SHAppBarMessage(ABM_SETPOS, ref appBarData);
 
-        return new PixelRect(appBarData.rc.Left, appBarData.rc.Top, appBarData.rc.Right - appBarData.rc.Left, appBarData.rc.Bottom - appBarData.rc.Top);
+        return new PixelRect(appBarData.rc.left, appBarData.rc.top, appBarData.rc.Width, appBarData.rc.Height);
     }
 
-    [LibraryImport("user32.dll")]
-    public static partial nint GetForegroundWindow();
+    // ===========================================================
 
-    [LibraryImport("user32.dll", SetLastError = true)]
-    public static partial uint GetWindowThreadProcessId(nint hWnd, out int processId);
+    private const uint PROCESS_POWER_THROTTLING_CURRENT_VERSION = 1;
+    private const uint PROCESS_POWER_THROTTLING_EXECUTION_SPEED = 1;
+
+    public static unsafe void EnablePowerThrottling() {
+        using Process process = Process.GetCurrentProcess();
+        using SafeFileHandle hProcess = new(process.Handle, false);
+
+        PInvoke.SetPriorityClass(hProcess, PROCESS_CREATION_FLAGS.IDLE_PRIORITY_CLASS);
+
+        PROCESS_POWER_THROTTLING_STATE state = new() {
+            Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION,
+            ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED,
+            StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED
+        };
+
+        PInvoke.SetProcessInformation(
+            hProcess,
+            PROCESS_INFORMATION_CLASS.ProcessPowerThrottling,
+            &state,
+            (uint)Marshal.SizeOf<PROCESS_POWER_THROTTLING_STATE>()
+        );
+    }
 }

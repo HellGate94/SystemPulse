@@ -9,6 +9,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>SystemPulse.ico</ApplicationIcon>
 		<PackageIcon>SystemPulse.png</PackageIcon>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="SystemPulse.ico" />

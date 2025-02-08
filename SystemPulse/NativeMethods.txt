@@ -1,0 +1,5 @@
+SHAppBarMessage
+
+SetPriorityClass
+SetProcessInformation
+PROCESS_POWER_THROTTLING_STATE
