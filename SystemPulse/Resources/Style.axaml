@@ -62,7 +62,7 @@
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
 					<GradientStop Color="{DynamicResource SystemBaseHighColor}" Offset="0.9" />
-					<GradientStop Color="#C7253E" Offset="0.975" />
+					<GradientStop Color="{DynamicResource SystemAccentColor}" Offset="0.975" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>
@@ -72,7 +72,7 @@
 			<Setter.Value>
 				<LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
 					<GradientStop Color="{DynamicResource SystemBaseHighColor}" Offset="0.9" />
-					<GradientStop Color="#C7253E" Offset="0.975" />
+					<GradientStop Color="{DynamicResource SystemAccentColor}" Offset="0.975" />
 				</LinearGradientBrush>
 			</Setter.Value>
 		</Setter>

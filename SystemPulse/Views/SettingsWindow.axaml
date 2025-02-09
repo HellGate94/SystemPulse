@@ -4,13 +4,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:SystemPulse.ViewModels"
 		xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:conv="using:SystemPulse.Converters"
-        mc:Ignorable="d" SizeToContent="Height" Width="300"
+        xmlns:c="using:SystemPulse.Converters"
+        mc:Ignorable="d" SizeToContent="Height" Width="300" CanResize="False"
         x:Class="SystemPulse.SettingsWindow" x:DataType="vm:SettingsViewModel"
         Icon="/Assets/SystemPulse.ico"
         Title="SystemPulse Settings">
 	<Window.Resources>
-		<conv:MathConverter x:Key="MbitConverter" Formula="x / 125000" BackFormula="x * 125000" />
+		<c:MathConverter x:Key="MbitConverter" Formula="x / 125000" BackFormula="x * 125000" />
 	</Window.Resources>
 	<StackPanel Margin="10" Spacing="10">
         <StackPanel>
@@ -34,12 +34,12 @@
 		</StackPanel>
 
 		<StackPanel>
-			<TextBlock Text="Download Bandwidth: (Mbit/s)" Margin="2" />
+			<TextBlock Text="Download Bandwidth: (Mbps)" Margin="2" />
 			<NumericUpDown Value="{Binding Settings.DownloadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
 		</StackPanel>
 
 		<StackPanel>
-			<TextBlock Text="Upload Bandwidth: (Mbit/s)" Margin="2" />
+			<TextBlock Text="Upload Bandwidth: (Mbps)" Margin="2" />
 			<NumericUpDown Value="{Binding Settings.UploadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
 		</StackPanel>
 
