@@ -19,6 +19,13 @@ class Program {
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(new Win32PlatformOptions {
+                CompositionMode = [
+                    Win32CompositionMode.RedirectionSurface, // seems to use way less cpu with no visible issues
+                    Win32CompositionMode.WinUIComposition,
+                    Win32CompositionMode.DirectComposition,
+                ],
+            })
             .WithInterFont()
             .LogToTrace();
 
