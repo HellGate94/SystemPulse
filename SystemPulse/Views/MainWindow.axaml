@@ -19,6 +19,8 @@
                 <c:MathConverter Formula="x * 8" />
                 <StaticResource ResourceKey="HumanReadableByteSizeConverter" />
             </c:ValueConverterGroup>
+            <c:MathConverter Formula="x * 30" x:Key="HourAngleConverter" />
+            <c:MathConverter Formula="x * 6" x:Key="MinuteAngleConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Resources/ProgressBar.axaml" />
@@ -35,12 +37,12 @@
                 <Ellipse Width="30" Height="30" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5"/>
                 <Line StartPoint="15,15" EndPoint="15,9" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="2.5" StrokeLineCap="Round">
                     <Line.RenderTransform>
-                        <RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding HourRotation}"/>
+                        <RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding Now.Hour, Converter={StaticResource HourAngleConverter}}"/>
                     </Line.RenderTransform>
                 </Line>
                 <Line StartPoint="15,15" EndPoint="15,5" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5" StrokeLineCap="Round">
                     <Line.RenderTransform>
-                        <RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding MinuteRotation}"/>
+                        <RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding Now.Minute, Converter={StaticResource MinuteAngleConverter}}"/>
                     </Line.RenderTransform>
                     <Line.Effect>
                         <DropShadowEffect BlurRadius="2" Color="{DynamicResource SystemAltHighColor}" OffsetX="0" OffsetY="0" />

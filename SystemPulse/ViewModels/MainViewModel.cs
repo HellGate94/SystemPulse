@@ -18,10 +18,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable, IUpdatable {
     private readonly Settings _settings;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HourRotation), nameof(MinuteRotation))]
     private DateTime _now;
-    public float HourRotation => Now.Hour / 12f * 360f;
-    public float MinuteRotation => Now.Minute / 60f * 360f;
 
     public HardwareCollection Hardwares => _hwInfoService.Hardwares;
     public ObservableCollection<PhysicalCore> PhysicalCores => _hwInfoService.PhysicalCores;

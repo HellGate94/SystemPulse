@@ -3,34 +3,46 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SystemPulse.Converters;
 public class MathConverter : IValueConverter {
     private Func<double, double>? _convertFormula;
     private Func<double, double>? _convertBackFormula;
 
-    public string? Formula { set => _convertFormula = CompileFormula(value); }
-    public string? BackFormula { set => _convertBackFormula = CompileFormula(value); }
+    public string? Formula {
+        set {
+            ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(Formula));
+            _convertFormula = CompileFormula(value);
+        }
+    }
+
+    public string? BackFormula {
+        set {
+            ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(BackFormula));
+            _convertBackFormula = CompileFormula(value);
+        }
+    }
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
-        var inputValue = System.Convert.ToDouble(value);
+        double inputValue = System.Convert.ToDouble(value, culture);
         return _convertFormula?.Invoke(inputValue);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) {
-        var inputValue = System.Convert.ToDouble(value);
+        double inputValue = System.Convert.ToDouble(value, culture);
         return _convertBackFormula?.Invoke(inputValue);
     }
 
-    private static Func<double, double> CompileFormula(string? formula) {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(formula));
+    private static Func<double, double> CompileFormula(string formula) {
+        if (string.IsNullOrWhiteSpace(formula))
+            throw new ArgumentException("Formula cannot be null or whitespace", nameof(formula));
 
         var parameter = Expression.Parameter(typeof(double), "x");
-        var tokens = Tokenize(formula!);
+        var tokens = Tokenize(formula);
         var parser = new Parser(tokens, parameter);
         var expression = parser.Parse();
-        var lambda = Expression.Lambda<Func<double, double>>(expression, parameter);
-        return lambda.Compile();
+        return Expression.Lambda<Func<double, double>>(expression, parameter).Compile();
     }
 
     private static IEnumerable<Token> Tokenize(string formula) {
@@ -52,8 +64,7 @@ public class MathConverter : IValueConverter {
                 int start = i;
                 while (i < formula.Length && char.IsLetter(formula[i]))
                     i++;
-                var name = formula[start..i];
-                yield return new Token(TokenType.Identifier, name);
+                yield return new Token(TokenType.Identifier, formula[start..i]);
             } else {
                 yield return c switch {
                     '+' => new Token(TokenType.Plus),
@@ -62,12 +73,12 @@ public class MathConverter : IValueConverter {
                     '/' => new Token(TokenType.Divide),
                     '(' => new Token(TokenType.ParenLeft),
                     ')' => new Token(TokenType.ParenRight),
+                    ',' => new Token(TokenType.Comma),
                     _ => throw new InvalidOperationException($"Unexpected character: {c}")
                 };
                 i++;
             }
         }
-
         yield return new Token(TokenType.End);
     }
 
@@ -80,6 +91,7 @@ public class MathConverter : IValueConverter {
         Divide,
         ParenLeft,
         ParenRight,
+        Comma,
         End
     }
 
@@ -91,69 +103,86 @@ public class MathConverter : IValueConverter {
             ["inf"] = double.PositiveInfinity,
         };
 
-        private static readonly Dictionary<string, Func<Expression, Expression>> Functions = new() {
-            ["sqrt"] = arg => Expression.Call(typeof(double).GetMethod("Sqrt")!, arg),
-            ["abs"] = arg => Expression.Call(typeof(double).GetMethod("Abs")!, arg),
-            ["sin"] = arg => Expression.Call(typeof(double).GetMethod("Sin")!, arg),
-            ["ceil"] = arg => Expression.Call(typeof(double).GetMethod("Ceiling")!, arg),
-            ["floor"] = arg => Expression.Call(typeof(double).GetMethod("Floor")!, arg),
-            ["round"] = arg => Expression.Call(typeof(double).GetMethod("Round", [typeof(double)])!, arg),
-            ["trunc"] = arg => Expression.Call(typeof(double).GetMethod("Truncate")!, arg),
-            ["exp"] = arg => Expression.Call(typeof(double).GetMethod("Exp")!, arg),
-            ["log"] = arg => Expression.Call(typeof(double).GetMethod("Log", [typeof(double)])!, arg),
-            ["cos"] = arg => Expression.Call(typeof(double).GetMethod("Cos")!, arg),
-            ["tan"] = arg => Expression.Call(typeof(double).GetMethod("Tan")!, arg),
+        private static readonly MethodInfo AbsMethod = typeof(double).GetMethod(nameof(double.Abs), [typeof(double)])!;
+        private static readonly MethodInfo CeilMethod = typeof(double).GetMethod(nameof(double.Ceiling), [typeof(double)])!;
+        private static readonly MethodInfo FloorMethod = typeof(double).GetMethod(nameof(double.Floor), [typeof(double)])!;
+        private static readonly MethodInfo RoundMethod = typeof(double).GetMethod(nameof(double.Round), [typeof(double)])!;
+        private static readonly MethodInfo TruncMethod = typeof(double).GetMethod(nameof(double.Truncate), [typeof(double)])!;
+        private static readonly MethodInfo SqrtMethod = typeof(double).GetMethod(nameof(double.Sqrt), [typeof(double)])!;
+        private static readonly MethodInfo PowMethod = typeof(double).GetMethod(nameof(double.Pow), [typeof(double), typeof(double)])!;
+        private static readonly MethodInfo ExpMethod = typeof(double).GetMethod(nameof(double.Exp), [typeof(double)])!;
+        private static readonly MethodInfo LogMethod = typeof(double).GetMethod(nameof(double.Log), [typeof(double), typeof(double)])!;
+        private static readonly MethodInfo LnMethod = typeof(double).GetMethod(nameof(double.Log), [typeof(double)])!;
+        private static readonly MethodInfo SinMethod = typeof(double).GetMethod(nameof(double.Sin), [typeof(double)])!;
+        private static readonly MethodInfo CosMethod = typeof(double).GetMethod(nameof(double.Cos), [typeof(double)])!;
+        private static readonly MethodInfo TanMethod = typeof(double).GetMethod(nameof(double.Tan), [typeof(double)])!;
+
+        private static readonly Dictionary<string, Func<IEnumerable<Expression>, Expression>> Functions = new() {
+            ["abs"] = args => Expression.Call(AbsMethod, args),
+            ["ceil"] = args => Expression.Call(CeilMethod, args),
+            ["floor"] = args => Expression.Call(FloorMethod, args),
+            ["round"] = args => Expression.Call(RoundMethod, args),
+            ["trunc"] = args => Expression.Call(TruncMethod, args),
+            ["sqrt"] = args => Expression.Call(SqrtMethod, args),
+            ["pow"] = args => Expression.Call(PowMethod, args),
+            ["exp"] = args => Expression.Call(ExpMethod, args),
+            ["log"] = args => Expression.Call(LogMethod, args),
+            ["ln"] = args => Expression.Call(LnMethod, args),
+            ["sin"] = args => Expression.Call(SinMethod, args),
+            ["cos"] = args => Expression.Call(CosMethod, args),
+            ["tan"] = args =>Expression.Call(TanMethod, args),
         };
 
         private readonly IEnumerator<Token> _tokens;
         private readonly ParameterExpression _parameter;
-        private Token _currentToken;
         private Token? _nextToken;
 
-        Token Peek() {
+        public Parser(IEnumerable<Token> tokens, ParameterExpression parameter) {
+            _tokens = tokens.GetEnumerator();
+            _parameter = parameter;
+        }
+
+        private Token Peek() {
             if (_nextToken is null) {
-                _tokens.MoveNext();
+                if (!_tokens.MoveNext())
+                    throw new InvalidOperationException("Unexpected end of token stream.");
                 _nextToken = _tokens.Current;
             }
             return _nextToken;
         }
 
-        Token Advance() {
-            _currentToken = Peek();
+        private Token Advance() {
+            Token token = Peek();
             _nextToken = null;
-            return _currentToken;
-        }
-
-        Token Expect(TokenType tokenType) {
-            var token = Advance();
-            if (token.Type != tokenType)
-                throw new InvalidOperationException();
             return token;
         }
 
-        public Parser(IEnumerable<Token> tokens, ParameterExpression parameter) {
-            _tokens = tokens.GetEnumerator();
-            _parameter = parameter;
-            _currentToken = Peek();
+        private Token Expect(TokenType tokenType) {
+            Token token = Advance();
+            if (token.Type != tokenType)
+                throw new InvalidOperationException($"Expected token {tokenType} but got {token.Type}.");
+            return token;
         }
 
         public Expression Parse() {
-            return ParseExpression();
+            Expression expr = ParseExpression();
+            if (Peek().Type != TokenType.End)
+                throw new InvalidOperationException("Unexpected tokens at end of expression.");
+            return expr;
         }
 
         private Expression ParseExpression() => ParseAdditionExpression();
 
         private Expression ParseOperatorChain(Func<Expression> parseOperand, Func<TokenType, Func<Expression, Expression, Expression>?> toOperator) {
-            var left = parseOperand();
+            Expression left = parseOperand();
 
             while (true) {
-                var op = toOperator(Peek().Type);
-
-                if (op is null)
+                var opFunc = toOperator(Peek().Type);
+                if (opFunc is null)
                     break;
-
                 Advance();
-                left = op(left, parseOperand());
+                Expression right = parseOperand();
+                left = opFunc(left, right);
             }
 
             return left;
@@ -161,79 +190,73 @@ public class MathConverter : IValueConverter {
 
         private Expression ParseAdditionExpression() => ParseOperatorChain(
             ParseMultiplicationExpression,
-            t => t switch {
+            tokenType => tokenType switch {
                 TokenType.Plus => (left, right) => Expression.Add(left, right),
                 TokenType.Minus => (left, right) => Expression.Subtract(left, right),
                 _ => null
-            }
-        );
+            });
+
         private Expression ParseMultiplicationExpression() => ParseOperatorChain(
             ParsePrefixUnaryOperator,
-            t => t switch {
+            tokenType => tokenType switch {
                 TokenType.Multiply => (left, right) => Expression.Multiply(left, right),
                 TokenType.Divide => (left, right) => Expression.Divide(left, right),
                 _ => null
-            }
-        );
+            });
+
         private Expression ParsePrefixUnaryOperator() {
-            TokenType? mbop = Peek().Type switch {
-                TokenType.Plus => TokenType.Plus,
-                TokenType.Minus => TokenType.Minus,
-                _ => null,
-            };
+            if (Peek().Type is TokenType.Plus or TokenType.Minus) {
+                TokenType op = Advance().Type;
+                Expression operand = ParsePrefixUnaryOperator();
+                return op switch {
+                    TokenType.Minus => Expression.Negate(operand),
+                    TokenType.Plus or _ => Expression.UnaryPlus(operand),
+                };
+            }
 
-            if (mbop is null)
-                return ParsePrimaryExpression();
-
-            var opToken = Advance();
-            var expr = ParsePrefixUnaryOperator();
-
-            return mbop switch {
-                TokenType.Plus => Expression.Negate(expr),
-                TokenType.Minus => Expression.Negate(expr),
-                _ => Expression.Empty()
-            };
-
-        }
-
-        private Expression ParseParenExpression(Token? paren = null) {
-            paren ??= Expect(TokenType.ParenLeft);
-            var inner = ParseExpression();
-            Expect(TokenType.ParenRight);
-
-            return inner;
+            return ParsePrimaryExpression();
         }
 
         private Expression ParsePrimaryExpression() {
-            var token = Advance();
-
+            Token token = Advance();
             return token.Type switch {
-                TokenType.NumberLiteral => Expression.Constant(double.Parse(token.Value!)),
+                TokenType.NumberLiteral => Expression.Constant(double.Parse(token.Value!, CultureInfo.InvariantCulture)),
                 TokenType.Identifier => ParseIdentifier(token),
-                TokenType.ParenLeft => ParseParenExpression(token),
-                _ => throw new Exception($"Expected an expression, got a {token} token."),
+                TokenType.ParenLeft => ParseParenExpression(),
+                _ => throw new InvalidOperationException($"Unexpected token: {token.Type}.")
             };
         }
+
+        private Expression ParseParenExpression() {
+            Expression inner = ParseExpression();
+            Expect(TokenType.ParenRight);
+            return inner;
+        }
+
         private Expression ParseIdentifier(Token token) {
-            string iden = token.Value!;
+            string id = token.Value!;
 
-            if (iden == "x") {
+            if (string.Equals(id, "x", StringComparison.OrdinalIgnoreCase))
                 return _parameter;
-            }
 
-            if (Constants.TryGetValue(iden, out var constantValue)) {
+            if (Constants.TryGetValue(id, out double constantValue))
                 return Expression.Constant(constantValue);
-            }
 
-            if (Functions.TryGetValue(iden, out var function)) {
+            if (Functions.TryGetValue(id, out var function)) {
                 Expect(TokenType.ParenLeft);
-                var argument = ParseExpression();
+                List<Expression> args = [];
+                if (Peek().Type != TokenType.ParenRight) {
+                    args.Add(ParseExpression());
+                    while (Peek().Type == TokenType.Comma) {
+                        Advance();
+                        args.Add(ParseExpression());
+                    }
+                }
                 Expect(TokenType.ParenRight);
-
-                return function(argument);
+                return function(args);
             }
 
-            throw new InvalidOperationException($"Unknown identifier: {iden}");
+            throw new InvalidOperationException($"Unknown identifier: {id}");
         }
     }
 }
