@@ -14,7 +14,7 @@
         Title="SystemPulse">
     <Window.Resources>
         <ResourceDictionary>
-            <c:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" />
+            <c:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" Format="0.0" />
             <c:ValueConverterGroup x:Key="MbitConverter">
                 <c:MathConverter Formula="x * 8" />
                 <StaticResource ResourceKey="HumanReadableByteSizeConverter" />
@@ -56,7 +56,7 @@
             <TextBlock Text="CPU" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
-					 ToolTip.Tip="{Binding Value, StringFormat=Cpu Usage: {0:0.00}%}" />
+					 ToolTip.Tip="{Binding Value, StringFormat=Cpu Usage: {0:0.0}%}" />
         <Rectangle Height="5"/>
         <ItemsControl ItemsSource="{Binding PhysicalCores}">
             <ItemsControl.ItemsPanel>
@@ -75,7 +75,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <ProgressBar Width="18" Height="40" Classes="Load" Orientation="Vertical" x:DataType="model:LogicalCore" BorderThickness="0"
-											 Value="{Binding LoadValue.Value}" Classes.isAlert="{Binding LoadValue.IsAlert}" ToolTip.Tip="{Binding LoadValue.Value, StringFormat=Core Usage: {0:0}%}" />
+											 Value="{Binding LoadValue.Value}" Classes.isAlert="{Binding LoadValue.IsAlert}" ToolTip.Tip="{Binding LoadValue.Value, StringFormat=Core Usage: {0:0.0}%}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -88,14 +88,14 @@
             <TextBlock Text="RAM" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Memory].Sensors}" Value="{Binding [Load/Memory].Value}" Classes.isAlert="{Binding [Load/Memory].IsAlert}"
-					 ToolTip.Tip="{Binding [Data/MemoryAvailable].Value, StringFormat=Free Space: {0:0.00} GB}" />
+					 ToolTip.Tip="{Binding [Data/MemoryAvailable].Value, StringFormat=Free Space: {0:0.0} GB}" />
 
         <StackPanel Classes="Header">
             <PathIcon Data="{StaticResource Gpu}" />
             <TextBlock Text="GPU" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
-					 ToolTip.Tip="{Binding Value, StringFormat=Graphics Usage: {0:0.00}%}" />
+					 ToolTip.Tip="{Binding Value, StringFormat=Graphics Usage: {0:0.0}%}" />
         <Rectangle Height="5"/>
         <ProgressBar Height="10" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors}" Value="{Binding [Load/GPUMemory].Value}" Classes.isAlert="{Binding [Load/GPUMemory].IsAlert}"
 					 ToolTip.Tip="{Binding [SmallData/GPUMemoryFree].Value, StringFormat=Free Space: {0}B, Converter={StaticResource HumanReadableByteSizeConverter}, ConverterParameter=2}" />
@@ -115,7 +115,7 @@
                     <Grid ColumnDefinitions="25, *">
                         <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center" FontSize="16" />
                         <ProgressBar Height="25" Grid.Column="1" Classes="Load" Value="{Binding Sensors[Load].Value}" Classes.isAlert="{Binding Sensors[Load].IsAlert}"
-									 ToolTip.Tip="{Binding Sensors[Load/FreeSpace].Value, StringFormat=Free Space: {0:0.00}B, Converter={StaticResource HumanReadableByteSizeConverter}}" />
+									 ToolTip.Tip="{Binding Sensors[Load/FreeSpace].Value, StringFormat=Free Space: {0:0.0}B, Converter={StaticResource HumanReadableByteSizeConverter}}" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

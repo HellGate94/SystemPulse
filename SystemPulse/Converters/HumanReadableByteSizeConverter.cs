@@ -5,12 +5,13 @@ using System.Globalization;
 namespace SystemPulse.Converters;
 public class HumanReadableByteSizeConverter : IValueConverter {
     public ulong Basis { get; set; } = 1024;
+    public string Format{ get; set; } = "0";
     private static readonly string[] MetricNames = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
         ulong bytes = System.Convert.ToUInt64(value);
         int basisIndex = parameter != null ? System.Convert.ToInt32(parameter) : 0;
         bytes *= (ulong)double.Pow(Basis, basisIndex);
-        return ClosestMetricString(bytes, Basis, "0.00", null);
+        return ClosestMetricString(bytes, Basis, Format, null);
     }
 
     private static string ClosestMetricString(ulong value, ulong basis, string? format, IFormatProvider? provider) {
