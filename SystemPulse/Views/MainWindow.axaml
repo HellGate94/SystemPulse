@@ -10,7 +10,7 @@
 		SystemDecorations="None" Background="{DynamicResource SystemAltMediumHighColor}"
 		ShowInTaskbar="False" ShowActivated="False" CanResize="False"
         x:Class="SystemPulse.Views.MainWindow" x:DataType="vm:MainViewModel"
-        Icon="/Assets/SystemPulse.ico"
+        Icon="/Assets/SystemPulse.ico" FontFamily="{StaticResource RubikFont}"
         Title="SystemPulse">
     <Window.Resources>
         <ResourceDictionary>

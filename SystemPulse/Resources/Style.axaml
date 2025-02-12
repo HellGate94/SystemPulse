@@ -11,7 +11,7 @@
 		</Style>
 		<Style Selector="^ > TextBlock">
 			<Setter Property="FontSize" Value="20" />
-			<Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontWeight" Value="Medium" />
 			<Setter Property="VerticalAlignment" Value="Center" />
 			<Setter Property="Margin" Value="5,0,0,0" />
 		</Style>

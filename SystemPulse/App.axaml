@@ -9,6 +9,9 @@
 	<Application.Styles>
 		<FluentTheme />
 	</Application.Styles>
+    <Application.Resources>
+        <FontFamily x:Key="RubikFont">avares://SystemPulse/Assets/Fonts#Rubik</FontFamily>
+    </Application.Resources>
 	<TrayIcon.Icons>
 		<TrayIcons>
 			<TrayIcon Icon="/Assets/SystemPulse.ico" ToolTipText="System Pulse">

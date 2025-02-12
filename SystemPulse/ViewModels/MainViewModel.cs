@@ -13,7 +13,7 @@ namespace SystemPulse.ViewModels;
 
 [RegisterTransient]
 [SupportedOSPlatform("windows")]
-public partial class MainViewModel : ViewModelBase, IDisposable, IUpdatable {
+public sealed partial class MainViewModel : ViewModelBase, IDisposable, IUpdatable {
     private readonly HardwareInfoService _hwInfoService;
     private readonly Settings _settings;
 

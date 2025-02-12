@@ -7,7 +7,7 @@
         xmlns:c="using:SystemPulse.Converters"
         mc:Ignorable="d" SizeToContent="Height" Width="300" CanResize="False"
         x:Class="SystemPulse.SettingsWindow" x:DataType="vm:SettingsViewModel"
-        Icon="/Assets/SystemPulse.ico"
+        Icon="/Assets/SystemPulse.ico" FontFamily="{StaticResource RubikFont}"
         Title="SystemPulse Settings">
 	<Window.Resources>
 		<c:MathConverter x:Key="MbitConverter" Formula="x / 125000" BackFormula="x * 125000" />
