@@ -97,7 +97,7 @@ public class MathConverter : IValueConverter {
 
     private record Token(TokenType Type, string? Value = null);
 
-    private class Parser {
+    private class Parser(IEnumerable<Token> tokens, ParameterExpression parameter) {
         private static readonly Dictionary<string, double> Constants = new() {
             ["pi"] = double.Pi,
             ["inf"] = double.PositiveInfinity,
@@ -130,17 +130,11 @@ public class MathConverter : IValueConverter {
             ["ln"] = args => Expression.Call(LnMethod, args),
             ["sin"] = args => Expression.Call(SinMethod, args),
             ["cos"] = args => Expression.Call(CosMethod, args),
-            ["tan"] = args =>Expression.Call(TanMethod, args),
+            ["tan"] = args => Expression.Call(TanMethod, args),
         };
 
-        private readonly IEnumerator<Token> _tokens;
-        private readonly ParameterExpression _parameter;
+        private readonly IEnumerator<Token> _tokens = tokens.GetEnumerator();
         private Token? _nextToken;
-
-        public Parser(IEnumerable<Token> tokens, ParameterExpression parameter) {
-            _tokens = tokens.GetEnumerator();
-            _parameter = parameter;
-        }
 
         private Token Peek() {
             if (_nextToken is null) {
@@ -237,7 +231,7 @@ public class MathConverter : IValueConverter {
             string id = token.Value!;
 
             if (string.Equals(id, "x", StringComparison.OrdinalIgnoreCase))
-                return _parameter;
+                return parameter;
 
             if (Constants.TryGetValue(id, out double constantValue))
                 return Expression.Constant(constantValue);

@@ -11,7 +11,7 @@ public interface IUpdatable {
 }
 
 [RegisterSingleton]
-public class UpdateService : IDisposable {
+public sealed class UpdateService : IDisposable {
     public static UpdateService? Default => Ioc.Default.GetService<UpdateService>();
 
     private class UpdateGroup : IDisposable {

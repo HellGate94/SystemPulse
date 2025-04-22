@@ -16,7 +16,7 @@ public partial class AppViewModel : ViewModelBase {
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
             _settingsWindow.Show();
         } else {
-            _settingsWindow.Activate(); // Does not bring the Window to front for whatever reason...
+            _settingsWindow.Activate(); // TODO: Does not bring the Window to front for whatever reason...
         }
     }
 

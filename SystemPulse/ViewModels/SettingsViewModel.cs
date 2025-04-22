@@ -31,7 +31,7 @@ public partial class SettingsViewModel : ViewModelBase {
     public IReadOnlyList<Screen> ScreenList { get; init; }
 
     [ObservableProperty]
-    ObservableCollection<Side> _sides = new ObservableCollection<Side>(Enum.GetValues<Side>());
+    ObservableCollection<Side> _sides = [.. Enum.GetValues<Side>()];
 
     [ObservableProperty]
     private bool _runOnStartup;

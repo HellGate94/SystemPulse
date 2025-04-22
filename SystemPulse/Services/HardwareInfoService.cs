@@ -41,7 +41,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
             .Where(s => s.Index >= 2) // 0 is total load, 1 is core max
             .ToArray();
 
-        //https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/issues/1632
+        //TODO: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/issues/1632
         //for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx++) {
         //    var pcpu = cpu.CpuId[coreIdx];
         //    PhysicalCore physicalCore = new(coreIdx);
@@ -53,6 +53,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
         //    PhysicalCores.Add(physicalCore);
         //}
 
+        // Hardcoded Workaround
         for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx += 2) {
             var pcpu = cpu.CpuId[coreIdx];
             PhysicalCore physicalCore = new(coreIdx);

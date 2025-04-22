@@ -47,11 +47,10 @@ public static class Native {
         var appBarData = new APPBARDATA {
             cbSize = (uint)Marshal.SizeOf<APPBARDATA>(),
             hWnd = (HWND)appBarHandle,
-        };
-
-        appBarData.uEdge = side switch {
-            Side.Left => 0,
-            Side.Right or _ => 2,
+            uEdge = side switch {
+                Side.Left => 0,
+                Side.Right or _ => 2,
+            }
         };
 
         var bounds = targetScreen.Bounds;

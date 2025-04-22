@@ -58,7 +58,7 @@
             <TextBlock Text="CPU" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
-					 ToolTip.Tip="{Binding Value, StringFormat=Cpu Usage: {0:0.0}%}" />
+					 ToolTip.Tip="{Binding Value, StringFormat=CPU Usage: {0:0.0}%}" />
         <Rectangle Height="5"/>
         <ItemsControl ItemsSource="{Binding PhysicalCores}">
             <ItemsControl.ItemsPanel>
@@ -97,7 +97,7 @@
             <TextBlock Text="GPU" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
-					 ToolTip.Tip="{Binding Value, StringFormat=Graphics Usage: {0:0.0}%}" />
+					 ToolTip.Tip="{Binding Value, StringFormat=GPU Usage: {0:0.0}%}" />
         <Rectangle Height="5"/>
         <ProgressBar Height="10" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors}" Value="{Binding [Load/GPUMemory].Value}" Classes.isAlert="{Binding [Load/GPUMemory].IsAlert}"
 					 ToolTip.Tip="{Binding [SmallData/GPUMemoryFree].Value, StringFormat=Free Space: {0}B, Converter={StaticResource HumanReadableByteSizeConverter}, ConverterParameter=2}" />
@@ -132,11 +132,11 @@
         <Grid ColumnDefinitions="*,5,*" Height="25">
             <ProgressBar Grid.Column="0" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/DownloadSpeed]}"
                          Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=DownloadBandwidth}"
-                         ToolTip.Tip="{Binding Value, StringFormat=Download: {0:0}bps, Converter={StaticResource MbitConverter}}" />
+                         ToolTip.Tip="{Binding Value, StringFormat=Download Speed: {0:0}bps, Converter={StaticResource MbitConverter}}" />
 
             <ProgressBar Grid.Column="2" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/UploadSpeed]}"
                          Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=UploadBandwidth}"
-                         ToolTip.Tip="{Binding Value, StringFormat=Upload: {0:0}bps, Converter={StaticResource MbitConverter}}" />
+                         ToolTip.Tip="{Binding Value, StringFormat=Upload Speed: {0:0}bps, Converter={StaticResource MbitConverter}}" />
         </Grid>
     </StackPanel>
 </Window>

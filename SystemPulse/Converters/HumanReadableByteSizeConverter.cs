@@ -5,7 +5,7 @@ using System.Globalization;
 namespace SystemPulse.Converters;
 public class HumanReadableByteSizeConverter : IValueConverter {
     public ulong Basis { get; set; } = 1024;
-    public string Format{ get; set; } = "0";
+    public string Format { get; set; } = "0";
     private static readonly string[] MetricNames = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
         ulong bytes = System.Convert.ToUInt64(value);
