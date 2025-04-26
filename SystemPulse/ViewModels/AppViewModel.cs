@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
 using Injectio.Attributes;
+using SystemPulse.Views;
 
 namespace SystemPulse.ViewModels;
 
@@ -20,6 +21,13 @@ public partial class AppViewModel : ViewModelBase {
         }
     }
 
+    // Why? Because Windows is shit and explorer.exe crashes and need to register the appbar after a restart
+    [RelayCommand]
+    private static void Reinitialize() {
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+            (desktop.MainWindow as MainWindow)?.Reinitialize();
+        }
+    }
 
     [RelayCommand]
     private static void Exit() {

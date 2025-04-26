@@ -17,6 +17,7 @@
 			<TrayIcon Icon="/Assets/SystemPulse.ico" ToolTipText="System Pulse">
 				<TrayIcon.Menu>
 					<NativeMenu>
+                        <NativeMenuItem Header="Reinitialize" Command="{Binding ReinitializeCommand}" />
 						<NativeMenuItem Header="Settings" Command="{Binding SettingsCommand}" />
 						<NativeMenuItemSeparator />
 						<NativeMenuItem Header="Exit" Command="{Binding ExitCommand}" />

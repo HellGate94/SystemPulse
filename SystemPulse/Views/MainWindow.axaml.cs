@@ -40,6 +40,10 @@ public partial class MainWindow : Window {
         if (Design.IsDesignMode) return;
         if (!(e.PropertyName is nameof(Settings.TargetScreen) or nameof(Settings.Side))) return;
 
+        Reinitialize();
+    }
+
+    public void Reinitialize() {
         UnregisterAppBar();
         RegisterAppBar();
     }
