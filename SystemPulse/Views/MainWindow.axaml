@@ -17,7 +17,7 @@
             <c:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" Format="0.0" />
             <c:ValueConverterGroup x:Key="MbitConverter">
                 <c:MathConverter Formula="x * 8" />
-                <StaticResource ResourceKey="HumanReadableByteSizeConverter" />
+                <c:HumanReadableByteSizeConverter Format="0.0" />
             </c:ValueConverterGroup>
             <c:MathConverter Formula="x * 30" x:Key="HourAngleConverter" />
             <c:MathConverter Formula="x * 6" x:Key="MinuteAngleConverter" />
@@ -51,10 +51,17 @@
             </Canvas>
             <TextBlock Text="Time" />
         </StackPanel>
-        <TextBlock Text="{Binding Now, StringFormat=T}}" MinWidth="90" HorizontalAlignment="Center" FontSize="20" PointerReleased="TextPointerReleasedHandler" />
-        <TextBlock Text="{Binding Now, StringFormat={}{0:ddd}\, {0:d}}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="TextPointerReleasedHandler" />
+        <TextBlock Text="{Binding Now, StringFormat=T}" MinWidth="90" HorizontalAlignment="Center" FontSize="20" PointerReleased="TextPointerReleasedHandler" />
+        <TextBlock Text="{Binding Now, StringFormat={}{0:ddd}\, {0:d}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="TextPointerReleasedHandler" />
         <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Cpu}" />
+            <PathIcon Data="{StaticResource Cpu}">
+                <ToolTip.Tip>
+                    <MultiBinding StringFormat="Temp: {0:0.0}&#176;C&#10;Power: {1:0.0}W">
+                        <Binding Path="Hardwares[Cpu].Sensors[Temperature/Core(Tctl/Tdie)].Value"/>
+                        <Binding Path="Hardwares[Cpu].Sensors[Power/Package].Value"/>
+                    </MultiBinding>
+                </ToolTip.Tip>
+            </PathIcon>
             <TextBlock Text="CPU" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
@@ -93,7 +100,14 @@
 					 ToolTip.Tip="{Binding [Data/MemoryAvailable].Value, StringFormat=Free Space: {0:0.0} GB}" />
 
         <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Gpu}" />
+            <PathIcon Data="{StaticResource Gpu}">
+                <ToolTip.Tip>
+                    <MultiBinding StringFormat="Temp: {0:0.0}&#176;C&#10;Power: {1:0.0}W">
+                        <Binding Path="Hardwares[Gpu].Sensors[Temperature/GPUCore].Value"/>
+                        <Binding Path="Hardwares[Gpu].Sensors[Power/GPUPackage].Value"/>
+                    </MultiBinding>
+                </ToolTip.Tip>
+            </PathIcon>
             <TextBlock Text="GPU" />
         </StackPanel>
         <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"

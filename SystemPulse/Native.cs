@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Platform;
 using Microsoft.Win32.SafeHandles;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
@@ -71,11 +72,14 @@ public static class Native {
     private const uint PROCESS_POWER_THROTTLING_CURRENT_VERSION = 1;
     private const uint PROCESS_POWER_THROTTLING_EXECUTION_SPEED = 1;
 
-    public static unsafe void EnablePowerThrottling() {
+    public static void EnablePowerThrottling() {
         using Process process = Process.GetCurrentProcess();
-        using SafeFileHandle hProcess = new(process.Handle, false);
+        SafeProcessHandle hProcess = process.SafeHandle;
 
-        PInvoke.SetPriorityClass(hProcess, PROCESS_CREATION_FLAGS.IDLE_PRIORITY_CLASS);
+        PInvoke.SetPriorityClass(
+            hProcess,
+            PROCESS_CREATION_FLAGS.IDLE_PRIORITY_CLASS
+        );
 
         PROCESS_POWER_THROTTLING_STATE state = new() {
             Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION,
@@ -83,11 +87,13 @@ public static class Native {
             StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED
         };
 
+        ReadOnlySpan<byte> stateBytes =
+            MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref state, 1));
+
         PInvoke.SetProcessInformation(
             hProcess,
             PROCESS_INFORMATION_CLASS.ProcessPowerThrottling,
-            &state,
-            (uint)Marshal.SizeOf<PROCESS_POWER_THROTTLING_STATE>()
+            stateBytes
         );
     }
 }

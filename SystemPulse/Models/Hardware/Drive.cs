@@ -1,10 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using LibreHardwareMonitor.Hardware;
 using System.IO;
-using System.Runtime.Versioning;
 
 namespace SystemPulse.Models.Hardware;
-[SupportedOSPlatform("windows")]
 public sealed partial class Drive : ObservableObject, IHardwareItem {
     private readonly DriveInfo _driveInfo;
     public string Name => _driveInfo.Name.Replace("\\", "");
