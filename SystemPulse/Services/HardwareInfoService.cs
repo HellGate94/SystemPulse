@@ -67,7 +67,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
 
         // =========================================================
 
-        var ram = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Memory).First();
+        var ram = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Memory && h.Name.Equals("Total Memory", StringComparison.Ordinal)).First();
         Hardwares.Add(new HardwareItem(ram));
 
         // =========================================================
