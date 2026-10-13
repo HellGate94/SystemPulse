@@ -46,7 +46,7 @@ public partial class App : Application {
     public override void OnFrameworkInitializationCompleted() {
         // Line below is needed to remove Avalonia data validation.
         // Without this line you will get duplicate validations from both Avalonia and CT
-        BindingPlugins.DataValidators.RemoveAt(0);
+        //BindingPlugins.DataValidators.RemoveAt(0);
 
         ConfigureServices();
         DataContext = Ioc.Default.GetService<ViewModels.AppViewModel>();

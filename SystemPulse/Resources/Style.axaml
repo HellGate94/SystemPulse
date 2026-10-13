@@ -24,6 +24,8 @@
 		<Setter Property="CornerRadius" Value="3" />
 	</Style>
 	<Style Selector="TextBlock.Censor">
+		<Setter Property="Padding" Value="15" />
+		<Setter Property="Margin" Value="-15" />
 		<Setter Property="Effect">
 			<Setter.Value>
 				<BlurEffect Radius="15" />

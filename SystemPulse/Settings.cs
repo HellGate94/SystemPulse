@@ -21,12 +21,12 @@ public partial class Settings : ObservableValidator {
     private string _iPService = "https://api.ipify.org";
 
     [ObservableProperty, NotifyDataErrorInfo]
-    [Range(0, 60f * 1000000f / 8f)]
-    private float _downloadBandwidth = 50f * 1000000f / 8f;
+    [Range(0, double.MaxValue)]
+    private double _downloadBandwidth = 50.0 * 1000000.0 / 8.0;
 
     [ObservableProperty, NotifyDataErrorInfo]
     [Range(0, double.MaxValue)]
-    private float _uploadBandwidth = 10f * 1000000f / 8f;
+    private double _uploadBandwidth = 10.0 * 1000000.0 / 8.0;
 
     [ObservableProperty, NotifyDataErrorInfo]
     [Range(0, int.MaxValue)]

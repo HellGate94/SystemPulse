@@ -76,7 +76,9 @@ public partial class MainWindow : Window {
             _appBarRegistered = false;
         }
     }
-    private void TextPointerReleasedHandler(object sender, PointerReleasedEventArgs args) {
-        Clipboard?.SetTextAsync(((TextBlock)sender).Text);
+    private async void TextPointerReleasedHandler(object sender, PointerReleasedEventArgs args) {
+        var data = new DataTransfer();
+        data.Add(DataTransferItem.CreateText(((TextBlock)sender).Text));
+        await GetTopLevel((Visual)sender)!.Clipboard!.SetDataAsync(data);
     }
 }

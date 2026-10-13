@@ -10,7 +10,7 @@
         Icon="/Assets/SystemPulse.ico" FontFamily="{StaticResource RubikFont}"
         Title="SystemPulse Settings">
 	<Window.Resources>
-		<c:MathConverter x:Key="MbitConverter" Formula="x / 125000" BackFormula="x * 125000" />
+		<c:MathConverter x:Key="MbitConverter" Formula="x / 125000.0" BackFormula="x * 125000.0" />
 	</Window.Resources>
 	<StackPanel Margin="10" Spacing="10">
         <StackPanel>
