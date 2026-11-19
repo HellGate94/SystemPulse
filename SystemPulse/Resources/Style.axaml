@@ -1,82 +1,179 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:views="using:SystemPulse.Views">
+	<Design.PreviewWith>
+		<views:MainWindow />
+	</Design.PreviewWith>
+
+	<Style Selector="StackPanel.PanelRoot">
+		<Setter Property="Margin" Value="8,24" />
+		<Setter Property="Spacing" Value="0" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+	</Style>
+
+	<Style Selector="StackPanel.CategoryList">
+		<Setter Property="Margin" Value="0,8,0,0" />
+		<Setter Property="Spacing" Value="8" />
+	</Style>
 	<Style Selector="StackPanel.Header">
-		<Setter Property="Margin" Value="0,25,0,7" />
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="Margin" Value="0,13,0,5" />
+		<Setter Property="Orientation" Value="Horizontal" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
+		<Setter Property="Spacing" Value="6" />
 		<Style Selector="^ > PathIcon">
-			<Setter Property="Width" Value="30" />
-			<Setter Property="Height" Value="30" />
-            <Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="Width" Value="24" />
+			<Setter Property="Height" Value="24" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
 		</Style>
 		<Style Selector="^ > TextBlock">
-			<Setter Property="FontSize" Value="20" />
-            <Setter Property="FontWeight" Value="Medium" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="Medium" />
 			<Setter Property="VerticalAlignment" Value="Center" />
-			<Setter Property="Margin" Value="5,0,0,0" />
+			<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
 		</Style>
 	</Style>
 
-	<Style Selector="Border.Load">
-		<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseHighColor}" />
+	<Style Selector="TextBlock.Clock">
+		<Setter Property="FontSize" Value="24" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
+	</Style>
+	<Style Selector="TextBlock.DateLine">
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}" />
+	</Style>
+
+	<Style Selector="Grid.MetricRow">
+		<Setter Property="Margin" Value="0,0,0,3" />
+	</Style>
+	<Style Selector="TextBlock.MetricLabel">
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}" />
+		<Setter Property="TextTrimming" Value="CharacterEllipsis" />
+	</Style>
+	<Style Selector="TextBlock.MetricValue">
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="FontWeight" Value="Normal" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}" />
+		<Setter Property="HorizontalAlignment" Value="Right" />
+	</Style>
+
+	<Style Selector="Border.SectionDivider">
+		<Setter Property="Height" Value="1" />
+		<Setter Property="Background" Value="{DynamicResource SystemBaseLowColor}" />
+		<Setter Property="Margin" Value="0,16,0,5" />
+	</Style>
+
+	<Style Selector="ItemsControl.CoreGrid">
+		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="UseLayoutRounding" Value="False" />
+	</Style>
+	<Style Selector="Border.CoreGroup">
+		<Setter Property="Padding" Value="2" />
+		<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseLowColor}" />
 		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="Padding" Value="1" />
 		<Setter Property="CornerRadius" Value="3" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="ProgressBar.Load">
+		<Setter Property="Theme" Value="{StaticResource {x:Type ProgressBar}}" />
+		<Setter Property="Height" Value="5" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="Foreground">
+			<Setter.Value>
+				<SolidColorBrush Color="{DynamicResource SystemAccentColor}" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="{DynamicResource SystemBaseLowColor}" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="CornerRadius" Value="3" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Style Selector="^ /template/ Border#ProgressBarRoot">
+			<Setter Property="Background">
+				<Setter.Value>
+					<SolidColorBrush Color="{DynamicResource SystemBaseLowColor}" />
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style Selector="^ /template/ Border#PART_Indicator">
+			<Setter Property="CornerRadius" Value="3" />
+		</Style>
+	</Style>
+	<Style Selector="ProgressBar.Load.CoreLoad">
+		<Setter Property="Width" Value="10" />
+		<Setter Property="Height" Value="25" />
+		<Setter Property="Orientation" Value="Vertical" />
+		<Setter Property="Margin" Value="0" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+	</Style>
+	<Style Selector="ProgressBar.Load.isAlert">
+		<Setter Property="Foreground">
+			<Setter.Value>
+				<SolidColorBrush Color="#D97706" />
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style Selector="StackPanel.InfoTip">
+		<Setter Property="Spacing" Value="3" />
+		<Setter Property="MinWidth" Value="125" />
+	</Style>
+	<Style Selector="TextBlock.InfoTipTitle">
+		<Setter Property="FontWeight" Value="SemiBold" />
+		<Setter Property="FontSize" Value="12" />
+	</Style>
+	<Style Selector="StackPanel.InfoTipRow">
+		<Setter Property="Spacing" Value="0" />
+	</Style>
+	<Style Selector="StackPanel.InfoTipRow > TextBlock">
+		<Setter Property="FontSize" Value="12" />
+	</Style>
+
+	<Style Selector="TextBlock.IpLabel">
+		<Setter Property="Margin" Value="0,0,0,2" />
+	</Style>
+	<Style Selector="TextBlock.IpValue">
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
 	</Style>
 	<Style Selector="TextBlock.Censor">
-		<Setter Property="Padding" Value="15" />
-		<Setter Property="Margin" Value="-15" />
+		<Setter Property="Padding" Value="6,2" />
+		<Setter Property="Margin" Value="-6,-2" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}" />
 		<Setter Property="Effect">
 			<Setter.Value>
-				<BlurEffect Radius="15" />
+				<BlurEffect Radius="8" />
 			</Setter.Value>
 		</Setter>
 		<Style Selector="^:pointerover">
 			<Setter Property="Effect" Value="{x:Null}" />
 		</Style>
 	</Style>
-	<Style Selector="ProgressBar.Load">
-		<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
-		<Setter Property="Background" Value="Transparent" />
-		<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseHighColor}" />
-		<Setter Property="CornerRadius" Value="3" />
-		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="Padding" Value="1" />
-		<Setter Property="MinHeight" Value="0" />
-		<Setter Property="MinWidth" Value="0" />
+
+	<Style Selector="StackPanel.DriveItemsPanel">
+		<Setter Property="Spacing" Value="8" />
+	</Style>
+	<Style Selector="StackPanel.DriveItem">
+		<Setter Property="Spacing" Value="3" />
+	</Style>
+	<Style Selector="ItemsControl.DriveList">
 		<Setter Property="HorizontalAlignment" Value="Stretch" />
-		<Setter Property="VerticalAlignment" Value="Stretch" />
-		<!--
-		<Setter Property="Transitions">
-			<Setter.Value>
-				<Transitions>
-					<DoubleTransition Property="Value" Duration="0:0:1" Easing="QuadraticEaseInOut" />
-				</Transitions>
-			</Setter.Value>
-		</Setter>
-		-->
-		<Style Selector="^ /template/ Border#PART_Indicator">
-			<Setter Property="CornerRadius" Value="2" />
-		</Style>
 	</Style>
-	<Style Selector="ProgressBar.Load.isAlert:horizontal">
-		<Setter Property="Foreground">
-			<Setter.Value>
-				<LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-					<GradientStop Color="{DynamicResource SystemBaseHighColor}" Offset="0.9" />
-					<GradientStop Color="{DynamicResource SystemAccentColor}" Offset="0.975" />
-				</LinearGradientBrush>
-			</Setter.Value>
-		</Setter>
-	</Style>
-	<Style Selector="ProgressBar.Load.isAlert:vertical">
-		<Setter Property="Foreground">
-			<Setter.Value>
-				<LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
-					<GradientStop Color="{DynamicResource SystemBaseHighColor}" Offset="0.9" />
-					<GradientStop Color="{DynamicResource SystemAccentColor}" Offset="0.975" />
-				</LinearGradientBrush>
-			</Setter.Value>
-		</Setter>
+	<Style Selector="PathIcon.NetworkArrow">
+		<Setter Property="Width" Value="12" />
+		<Setter Property="Height" Value="12" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="Foreground" Value="{DynamicResource SystemBaseMediumColor}" />
 	</Style>
 </Styles>

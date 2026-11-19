@@ -1,156 +1,251 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:SystemPulse.ViewModels"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:SystemPulse.ViewModels"
 		xmlns:app="using:SystemPulse"
 		xmlns:model="using:SystemPulse.Models.Hardware"
-        xmlns:c="using:SystemPulse.Converters"
-        mc:Ignorable="d" Width="180" d:DesignHeight="1080"
-		SystemDecorations="None" Background="{DynamicResource SystemAltMediumHighColor}"
-		ShowInTaskbar="False" ShowActivated="False" CanResize="False"
-        x:Class="SystemPulse.Views.MainWindow" x:DataType="vm:MainViewModel"
-        Icon="/Assets/SystemPulse.ico" FontFamily="{StaticResource RubikFont}"
-        Title="SystemPulse">
-    <Window.Resources>
-        <ResourceDictionary>
-            <c:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" Format="0.0" />
-            <c:ValueConverterGroup x:Key="MbitConverter">
-                <c:MathConverter Formula="x * 8" />
-                <c:HumanReadableByteSizeConverter Format="0.0" />
-            </c:ValueConverterGroup>
-            <c:MathConverter Formula="x * 30" x:Key="HourAngleConverter" />
-            <c:MathConverter Formula="x * 6" x:Key="MinuteAngleConverter" />
+		xmlns:c="using:SystemPulse.Converters"
+		xmlns:ctrl="using:SystemPulse.Controls"
+		mc:Ignorable="d"
+		Width="158"
+		d:DesignHeight="1080"
+		WindowDecorations="None"
+		Background="{DynamicResource SystemAltMediumHighColor}"
+		Foreground="{DynamicResource SystemBaseHighColor}"
+		ShowInTaskbar="False"
+		ShowActivated="False"
+		CanResize="False"
+		x:Class="SystemPulse.Views.MainWindow"
+		x:DataType="vm:MainViewModel"
+		Icon="/Assets/SystemPulse.ico"
+		FontFamily="{StaticResource RubikFont}"
+		Title="SystemPulse">
+	<Window.Resources>
+		<ResourceDictionary>
+			<c:HumanReadableByteSizeConverter x:Key="HumanReadableByteSizeConverter" Format="0.0" />
+			<c:MathConverter Formula="x * 30" x:Key="HourAngleConverter" />
+			<c:MathConverter Formula="x * 6" x:Key="MinuteAngleConverter" />
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Resources/ProgressBar.axaml" />
+				<ResourceInclude Source="/Resources/Icons.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Window.Styles>
+		<StyleInclude Source="/Resources/Style.axaml" />
+	</Window.Styles>
 
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Resources/ProgressBar.axaml" />
-                <ResourceInclude Source="/Resources/Icons.axaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    <Window.Styles>
-        <StyleInclude Source="/Resources/Style.axaml" />
-    </Window.Styles>
-    <StackPanel Margin="10,75,10,0">
-        <StackPanel Classes="Header">
-            <Canvas Width="30" Height="30">
-                <Ellipse Width="30" Height="30" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5"/>
-                <Line StartPoint="15,15" EndPoint="15,9" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="2.5" StrokeLineCap="Round">
-                    <Line.RenderTransform>
-                        <RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding Now.Hour, Converter={StaticResource HourAngleConverter}}"/>
-                    </Line.RenderTransform>
-                </Line>
-                <Line StartPoint="15,15" EndPoint="15,5" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5" StrokeLineCap="Round">
-                    <Line.RenderTransform>
-                        <RotateTransform CenterX="7.5" CenterY="7.5" Angle="{Binding Now.Minute, Converter={StaticResource MinuteAngleConverter}}"/>
-                    </Line.RenderTransform>
-                    <Line.Effect>
-                        <DropShadowEffect BlurRadius="2" Color="{DynamicResource SystemAltHighColor}" OffsetX="0" OffsetY="0" />
-                    </Line.Effect>
-                </Line>
-            </Canvas>
-            <TextBlock Text="Time" />
-        </StackPanel>
-        <TextBlock Text="{Binding Now, StringFormat=T}" MinWidth="90" HorizontalAlignment="Center" FontSize="20" PointerReleased="TextPointerReleasedHandler" />
-        <TextBlock Text="{Binding Now, StringFormat={}{0:ddd}\, {0:d}}" HorizontalAlignment="Center" FontSize="16" PointerReleased="TextPointerReleasedHandler" />
-        <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Cpu}">
-                <ToolTip.Tip>
-                    <MultiBinding StringFormat="Temp: {0:0.0}&#176;C&#10;Power: {1:0.0}W">
-                        <Binding Path="Hardwares[Cpu].Sensors[Temperature/Core(Tctl/Tdie)].Value"/>
-                        <Binding Path="Hardwares[Cpu].Sensors[Power/Package].Value"/>
-                    </MultiBinding>
-                </ToolTip.Tip>
-            </PathIcon>
-            <TextBlock Text="CPU" />
-        </StackPanel>
-        <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
-					 ToolTip.Tip="{Binding Value, StringFormat=CPU Usage: {0:0.0}%}" />
-        <Rectangle Height="5"/>
-        <ItemsControl ItemsSource="{Binding PhysicalCores}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ItemsControl Margin="1" ItemsSource="{Binding LogicalCores}" x:DataType="model:PhysicalCore" BorderThickness="1" CornerRadius="3" BorderBrush="{DynamicResource SystemBaseHighColor}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ProgressBar Width="18" Height="40" Classes="Load" Orientation="Vertical" x:DataType="model:LogicalCore" BorderThickness="0"
-											 Value="{Binding LoadValue.Value}" Classes.isAlert="{Binding LoadValue.IsAlert}" ToolTip.Tip="{Binding LoadValue.Value, StringFormat=Core Usage: {0:0.0}%}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+	<Grid>
+		<StackPanel Classes="PanelRoot" Margin="8,100,8,0">
+			<!-- TIME -->
+			<StackPanel Classes="Header">
+				<Canvas Width="24" Height="24" ClipToBounds="True">
+					<Ellipse Canvas.Left="1" Canvas.Top="1" Width="22" Height="22" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5" />
+					<Line StartPoint="12,12" EndPoint="12,8" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="2.5" StrokeLineCap="Round">
+						<Line.RenderTransform>
+							<RotateTransform CenterX="6" CenterY="6" Angle="{Binding Now.Hour, Converter={StaticResource HourAngleConverter}}" />
+						</Line.RenderTransform>
+					</Line>
+					<Line StartPoint="12,12" EndPoint="12,5" Stroke="{DynamicResource SystemBaseHighColor}" StrokeThickness="1.5" StrokeLineCap="Round">
+						<Line.RenderTransform>
+							<RotateTransform CenterX="6" CenterY="6" Angle="{Binding Now.Minute, Converter={StaticResource MinuteAngleConverter}}" />
+						</Line.RenderTransform>
+					</Line>
+				</Canvas>
+				<TextBlock Text="TIME" />
+			</StackPanel>
+			<TextBlock Classes="Clock" Text="{Binding Now, StringFormat=T}" PointerReleased="TextPointerReleasedHandler" />
+			<TextBlock Classes="DateLine" Margin="0,2,0,0" Text="{Binding Now, StringFormat='{}{0:ddd, dd.MM.yyyy}'}" PointerReleased="TextPointerReleasedHandler" />
+			<Border Classes="SectionDivider" />
 
-        <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Ram}" />
-            <TextBlock Text="RAM" />
-        </StackPanel>
-        <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Memory].Sensors}" Value="{Binding [Load/Memory].Value}" Classes.isAlert="{Binding [Load/Memory].IsAlert}"
-					 ToolTip.Tip="{Binding [Data/MemoryAvailable].Value, StringFormat=Free Space: {0:0.0} GB}" />
+			<!-- CPU -->
+			<StackPanel Classes="Header">
+				<PathIcon Data="{StaticResource Cpu}" />
+				<TextBlock Text="PROCESSOR" />
+			</StackPanel>
 
-        <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Gpu}">
-                <ToolTip.Tip>
-                    <MultiBinding StringFormat="Temp: {0:0.0}&#176;C&#10;Power: {1:0.0}W">
-                        <Binding Path="Hardwares[Gpu].Sensors[Temperature/GPUCore].Value"/>
-                        <Binding Path="Hardwares[Gpu].Sensors[Power/GPUPackage].Value"/>
-                    </MultiBinding>
-                </ToolTip.Tip>
-            </PathIcon>
-            <TextBlock Text="GPU" />
-        </StackPanel>
-        <ProgressBar Height="25" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}" Value="{Binding Value}" Classes.isAlert="{Binding IsAlert}"
-					 ToolTip.Tip="{Binding Value, StringFormat=GPU Usage: {0:0.0}%}" />
-        <Rectangle Height="5"/>
-        <ProgressBar Height="10" Classes="Load" DataContext="{Binding Hardwares[Gpu].Sensors}" Value="{Binding [Load/GPUMemory].Value}" Classes.isAlert="{Binding [Load/GPUMemory].IsAlert}"
-					 ToolTip.Tip="{Binding [SmallData/GPUMemoryFree].Value, StringFormat=Free Space: {0}B, Converter={StaticResource HumanReadableByteSizeConverter}, ConverterParameter=2}" />
+			<StackPanel Classes="CategoryList">
+				<ctrl:DataItem Label="Load"
+							   DataContext="{Binding Hardwares[Cpu].Sensors[Load/CPUTotal]}"
+							   Value="{Binding Value}"
+							   ValueFormat="{}{0:0}%"
+							   IsAlert="{Binding IsAlert}" />
+				<ItemsControl Classes="CoreGrid" ItemsSource="{Binding PhysicalCores}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" ItemSpacing="2" LineSpacing="2" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="model:PhysicalCore">
+							<Border Classes="CoreGroup">
+								<ItemsControl ItemsSource="{Binding LogicalCores}">
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8" />
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+									<ItemsControl.ItemTemplate>
+										<DataTemplate x:DataType="model:LogicalCore">
+											<ProgressBar Classes="Load CoreLoad" Minimum="0" Maximum="100"
+														 Value="{Binding LoadValue.Value}"
+														 Classes.isAlert="{Binding LoadValue.IsAlert}">
+												<ToolTip.Tip>
+													<StackPanel Classes="InfoTip" DataContext="{Binding}">
+														<TextBlock Classes="InfoTipTitle" Text="Logical processor" />
+														<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+															<TextBlock Text="Index: " />
+															<TextBlock Text="{Binding LoadValue.Index}" />
+														</StackPanel>
+														<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+															<TextBlock Text="Usage: " />
+															<TextBlock Text="{Binding LoadValue.Value, StringFormat='{}{0:0.0}%'}" />
+														</StackPanel>
+													</StackPanel>
+												</ToolTip.Tip>
+											</ProgressBar>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+			<Border Classes="SectionDivider" />
 
-        <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Storage}" />
-            <TextBlock Text="STORAGE" />
-        </StackPanel>
-        <ItemsControl ItemsSource="{Binding Drives}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Spacing="5" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="25, *">
-                        <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center" FontSize="16" />
-                        <ProgressBar Height="25" Grid.Column="1" Classes="Load" Value="{Binding Sensors[Load].Value}" Classes.isAlert="{Binding Sensors[Load].IsAlert}"
-									 ToolTip.Tip="{Binding Sensors[Load/FreeSpace].Value, StringFormat=Free Space: {0:0.0}B, Converter={StaticResource HumanReadableByteSizeConverter}}" />
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+			<!-- RAM -->
+			<StackPanel Classes="Header">
+				<PathIcon Data="{StaticResource Ram}" />
+				<TextBlock Text="MEMORY" />
+			</StackPanel>
 
-        <StackPanel Classes="Header">
-            <PathIcon Data="{StaticResource Network}" />
-            <TextBlock Text="NETWORK" />
-        </StackPanel>
-        <TextBlock Classes="Censor" Text="{Binding IpAddress}" HorizontalAlignment="Center" ToolTip.Tip="External IP" PointerReleased="TextPointerReleasedHandler" />
-        <Rectangle Height="5"/>
-        <Grid ColumnDefinitions="*,5,*" Height="25">
-            <ProgressBar Grid.Column="0" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/DownloadSpeed]}"
-                         Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=DownloadBandwidth}"
-                         ToolTip.Tip="{Binding Value, StringFormat=Download Speed: {0:0}bps, Converter={StaticResource MbitConverter}}" />
+			<StackPanel Classes="CategoryList">
+				<ctrl:DataItem Label="RAM"
+							   DataContext="{Binding Hardwares[Memory].Sensors}"
+							   Value="{Binding [Load/Memory].Value}"
+							   ValueFormat="{}{0:0}%"
+							   IsAlert="{Binding [Load/Memory].IsAlert}">
+					<ctrl:DataItem.ProgressToolTip>
+						<StackPanel Classes="InfoTip">
+							<TextBlock Classes="InfoTipTitle" Text="Memory" />
+							<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+								<TextBlock Text="Available: " />
+								<TextBlock Text="{Binding [Data/MemoryAvailable].Value, StringFormat='{}{0:0.0}'}" />
+								<TextBlock Text=" GB" />
+							</StackPanel>
+						</StackPanel>
+					</ctrl:DataItem.ProgressToolTip>
+				</ctrl:DataItem>
+			</StackPanel>
+			<Border Classes="SectionDivider" />
 
-            <ProgressBar Grid.Column="2" Classes="Load" DataContext="{Binding Hardwares[Network].Sensors[Throughput/UploadSpeed]}"
-                         Value="{Binding Value}" Maximum="{Binding Source={x:Static app:Settings.Default}, Path=UploadBandwidth}"
-                         ToolTip.Tip="{Binding Value, StringFormat=Upload Speed: {0:0}bps, Converter={StaticResource MbitConverter}}" />
-        </Grid>
-    </StackPanel>
+			<!-- GPU -->
+			<StackPanel Classes="Header">
+				<PathIcon Data="{StaticResource Gpu}" />
+				<TextBlock Text="GRAPHICS" />
+			</StackPanel>
+
+			<StackPanel Classes="CategoryList">
+				<ctrl:DataItem Label="Load"
+							   DataContext="{Binding Hardwares[Gpu].Sensors[Load/GPUCore]}"
+							   Value="{Binding Value}"
+							   ValueFormat="{}{0:0}%"
+							   IsAlert="{Binding IsAlert}" />
+
+				<ctrl:DataItem Label="VRAM"
+							   DataContext="{Binding Hardwares[Gpu].Sensors}"
+							   Value="{Binding [Load/GPUMemory].Value}"
+							   ValueFormat="{}{0:0}%"
+							   IsAlert="{Binding [Load/GPUMemory].IsAlert}">
+					<ctrl:DataItem.ProgressToolTip>
+						<StackPanel Classes="InfoTip">
+							<TextBlock Classes="InfoTipTitle" Text="Graphics memory" />
+							<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+								<TextBlock Text="Free: " />
+								<TextBlock Text="{Binding [SmallData/GPUMemoryFree].Value, Converter={StaticResource HumanReadableByteSizeConverter}, ConverterParameter=2}" />
+								<TextBlock Text="B" />
+							</StackPanel>
+						</StackPanel>
+					</ctrl:DataItem.ProgressToolTip>
+				</ctrl:DataItem>
+			</StackPanel>
+			<Border Classes="SectionDivider" />
+
+			<!-- STORAGE -->
+			<StackPanel Classes="Header">
+				<PathIcon Data="{StaticResource Storage}" />
+				<TextBlock Text="STORAGE" />
+			</StackPanel>
+			<ItemsControl Classes="DriveList" ItemsSource="{Binding Drives}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Classes="CategoryList" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<ctrl:DataItem Label="{Binding Name}"
+									   Value="{Binding Sensors[Load].Value}"
+									   ValueFormat="{}{0:0}%"
+									   IsAlert="{Binding Sensors[Load].IsAlert}">
+							<ctrl:DataItem.ProgressToolTip>
+								<StackPanel Classes="InfoTip">
+									<TextBlock Classes="InfoTipTitle" Text="{Binding Name}" />
+									<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+										<TextBlock Text="Free: " />
+										<TextBlock Text="{Binding Sensors[Load/FreeSpace].Value, Converter={StaticResource HumanReadableByteSizeConverter}}" />
+										<TextBlock Text="B" />
+									</StackPanel>
+									<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+										<TextBlock Text="Used: " />
+										<TextBlock Text="{Binding Sensors[Load/UsedSpace].Value, Converter={StaticResource HumanReadableByteSizeConverter}}" />
+										<TextBlock Text="B" />
+									</StackPanel>
+									<StackPanel Classes="InfoTipRow" Orientation="Horizontal" Spacing="0">
+										<TextBlock Text="Total: " />
+										<TextBlock Text="{Binding Sensors[Load/TotalSpace].Value, Converter={StaticResource HumanReadableByteSizeConverter}}" />
+										<TextBlock Text="B" />
+									</StackPanel>
+								</StackPanel>
+							</ctrl:DataItem.ProgressToolTip>
+						</ctrl:DataItem>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+			<Border Classes="SectionDivider" />
+
+			<!-- NETWORK -->
+			<StackPanel Classes="Header">
+				<PathIcon Data="{StaticResource Network}" />
+				<TextBlock Text="NETWORK" />
+			</StackPanel>
+
+			<StackPanel Classes="CategoryList">
+				<Grid Classes="MetricRow" ColumnDefinitions="*,Auto">
+					<TextBlock Classes="MetricLabel IpLabel" Text="Public IP" />
+					<TextBlock Grid.Column="1" Classes="Censor IpValue" Text="{Binding IpAddress}" PointerReleased="TextPointerReleasedHandler" />
+				</Grid>
+				<ctrl:DataItem Label="Down"
+							   DataContext="{Binding Hardwares[Network].Sensors[Throughput/DownloadSpeed]}"
+							   Value="{Binding Value}"
+							   Maximum="{Binding Source={x:Static app:Settings.Default}, Path=DownloadBandwidth}"
+							   ValueText="{Binding Value, Converter={StaticResource HumanReadableByteSizeConverter}, StringFormat='{}{0}B/s'}">
+					<ctrl:DataItem.Icon>
+						<PathIcon Data="{StaticResource DownArrow}" Classes="NetworkArrow" />
+					</ctrl:DataItem.Icon>
+				</ctrl:DataItem>
+				<ctrl:DataItem Label="Up"
+							   DataContext="{Binding Hardwares[Network].Sensors[Throughput/UploadSpeed]}"
+							   Value="{Binding Value}"
+							   Maximum="{Binding Source={x:Static app:Settings.Default}, Path=UploadBandwidth}"
+							   ValueText="{Binding Value, Converter={StaticResource HumanReadableByteSizeConverter}, StringFormat='{}{0}B/s'}">
+					<ctrl:DataItem.Icon>
+						<PathIcon Data="{StaticResource UpArrow}" Classes="NetworkArrow" />
+					</ctrl:DataItem.Icon>
+				</ctrl:DataItem>
+			</StackPanel>
+		</StackPanel>
+	</Grid>
 </Window>

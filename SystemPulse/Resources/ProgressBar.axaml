@@ -1,46 +1,52 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Design.PreviewWith>
-		<Border Padding="20">
-			<StackPanel Orientation="Horizontal" Spacing="10">
-				<StackPanel Spacing="10">
-					<ProgressBar Value="5" Maximum="10" />
-					<ProgressBar Value="50" />
-					<ProgressBar Value="50" Minimum="25" Maximum="75" />
-					<ProgressBar ShowProgressText="True" Value="50"/>
-					<ProgressBar ShowProgressText="True"
-								 ProgressTextFormat="\{1\} percent"
-								 Minimum="50"
-								 Maximum="100"
-								 Value="70"/>
+		<Border Padding="16" Background="{DynamicResource SystemAltMediumHighColor}">
+			<StackPanel Width="150" Spacing="12">
+				<ProgressBar Classes="Load" Value="23" />
+				<ProgressBar Classes="Load" Value="50" />
+				<ProgressBar Classes="Load" Value="72" />
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<ProgressBar Classes="Load CoreLoad" Value="25" />
+					<ProgressBar Classes="Load CoreLoad" Value="70" />
+					<ProgressBar Classes="Load CoreLoad" Value="45" />
 				</StackPanel>
-				<ProgressBar ShowProgressText="True" Value="50" Orientation="Vertical"/>
 			</StackPanel>
 		</Border>
 	</Design.PreviewWith>
 
 	<ControlTheme x:Key="{x:Type ProgressBar}" TargetType="ProgressBar">
-		<Setter Property="Foreground" Value="{DynamicResource SystemBaseHighColor}" />
-		<Setter Property="Background" Value="Transparent" />
-		<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseHighColor}" />
-		<Setter Property="BorderThickness" Value="{DynamicResource ProgressBarBorderThemeThickness}" />
-		<Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+		<Setter Property="Foreground">
+			<Setter.Value>
+				<SolidColorBrush Color="{DynamicResource SystemAccentColor}" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="{DynamicResource SystemBaseLowColor}" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="CornerRadius" Value="3" />
+		<Setter Property="Padding" Value="0" />
 		<Setter Property="HorizontalAlignment" Value="Stretch" />
-		<Setter Property="VerticalAlignment" Value="Stretch" />
-		<Setter Property="MinHeight" Value="{DynamicResource ProgressBarThemeMinHeight}" />
-		<Setter Property="MinWidth" Value="{DynamicResource ProgressBarThemeMinWidth}" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
 		<Setter Property="Template">
 			<ControlTemplate TargetType="ProgressBar">
 				<Border x:Name="ProgressBarRoot"
+						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Background="{TemplateBinding Background}"
-						ClipToBounds="True"
-						CornerRadius="{TemplateBinding CornerRadius}">
-						<Panel x:Name="DeterminateRoot" Margin="{TemplateBinding Padding}">
-							<Border x:Name="PART_Indicator" 
-								Background="{TemplateBinding Foreground}" CornerRadius="{DynamicResource ControlCornerRadius}" />
-						</Panel>
+						CornerRadius="{TemplateBinding CornerRadius}"
+						ClipToBounds="True">
+					<Panel x:Name="DeterminateRoot" Margin="{TemplateBinding Padding}">
+						<Border x:Name="PART_Indicator"
+								Background="{TemplateBinding Foreground}"
+								CornerRadius="{TemplateBinding CornerRadius}" />
+					</Panel>
 				</Border>
 			</ControlTemplate>
 		</Setter>

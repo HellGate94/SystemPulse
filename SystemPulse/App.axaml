@@ -10,7 +10,13 @@
 		<FluentTheme />
 	</Application.Styles>
     <Application.Resources>
+		
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://SystemPulse/Controls/DataItem.axaml" />
+      </ResourceDictionary.MergedDictionaries>
         <FontFamily x:Key="RubikFont">avares://SystemPulse/Assets/Fonts#Rubik</FontFamily>
+    </ResourceDictionary>
     </Application.Resources>
 	<TrayIcon.Icons>
 		<TrayIcons>

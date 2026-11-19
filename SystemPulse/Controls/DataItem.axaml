@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:controls="using:SystemPulse.Controls">
+
+	<Design.PreviewWith>
+		<StackPanel Width="400" Spacing="10" Margin="20">
+			<controls:DataItem Label="Load" Value="65" ValueFormat="{}{0:0}%" />
+		</StackPanel>
+	</Design.PreviewWith>
+
+	<ControlTheme x:Key="{x:Type controls:DataItem}" TargetType="controls:DataItem">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<StackPanel Background="{TemplateBinding Background}">
+					<Grid Classes="MetricRow" ColumnDefinitions="*,Auto">
+						<StackPanel Orientation="Horizontal" Spacing="4">
+							<ContentPresenter Content="{TemplateBinding Icon}"
+											  IsVisible="{TemplateBinding Icon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+							<TextBlock Classes="MetricLabel"
+									   Text="{TemplateBinding Label}"
+									   IsVisible="{TemplateBinding Label, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+						</StackPanel>
+						<TextBlock Grid.Column="1"
+								   Classes="MetricValue"
+								   Text="{TemplateBinding DisplayValue}" />
+					</Grid>
+					<ProgressBar Classes="Load"
+								 Minimum="{TemplateBinding Minimum}"
+								 Maximum="{TemplateBinding Maximum}"
+								 Value="{TemplateBinding Value}"
+								 Classes.isAlert="{TemplateBinding IsAlert}"
+								 ToolTip.Tip="{TemplateBinding ProgressToolTip}" />
+				</StackPanel>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+</ResourceDictionary>
