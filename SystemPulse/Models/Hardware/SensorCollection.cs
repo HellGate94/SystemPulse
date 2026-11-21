@@ -9,13 +9,13 @@ namespace SystemPulse.Models.Hardware;
 public interface ISensorItem {
     string Name { get; }
     float Value { get; }
-    bool IsAlert { get; }
     SensorType SensorType { get; }
     void Update();
 }
 public class SensorCollection : ObservableCollection<ISensorItem> {
     public ISensorItem this[string value] => this.First(h => h.Name == value);
 }
+
 public partial class SensorItem : ObservableObject, ISensorItem {
     [ObservableProperty]
     private ISensor _sensor;
@@ -26,14 +26,11 @@ public partial class SensorItem : ObservableObject, ISensorItem {
     public int Index => Sensor.Index;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsAlert))]
     private float _value = 0f;
 
-    public bool IsAlert => Value > 95f;
-
-    public SensorItem(ISensor sensor) {
+    public SensorItem(ISensor sensor, string? name = null) {
         Sensor = sensor;
-        Name = $"{sensor.SensorType}/{sensor.Name.Replace(" ", "")}";
+        Name = name ?? $"{sensor.SensorType}/{sensor.Name.Replace(" ", "")}";
         Update();
     }
 

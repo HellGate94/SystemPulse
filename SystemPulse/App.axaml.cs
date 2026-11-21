@@ -8,10 +8,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Text.Json;
+using SystemPulse.Services;
 using SystemPulse.Views;
 
 namespace SystemPulse;
 public partial class App : Application {
+    public const string AppName = "SystemPulse";
     private const string SettingsFilePath = "settings.json";
 
     public override void Initialize() {
@@ -26,19 +28,26 @@ public partial class App : Application {
 
         services.AddLogging(builder => builder.AddDebug());
 
-        Settings settings;
-        if (File.Exists(SettingsFilePath)) {
-            var json = File.ReadAllText(SettingsFilePath);
-            settings = JsonSerializer.Deserialize<Settings>(json)!;
-        } else {
-            settings = new Settings();
-        }
+        Settings settings = LoadSettings();
         settings.PropertyChanged += Settings_PropertyChanged;
         services.AddSingleton(settings);
+        services.AddSingleton(new StartupOptions(
+            AppName,
+            $"Starts {AppName} when the user logs in.",
+            Environment.ProcessPath!
+        ));
         services.AddSystemPulse();
 
         Ioc.Default.ConfigureServices(services.BuildServiceProvider());
         Resources[typeof(IServiceProvider)] = services;
+    }
+
+    private static Settings LoadSettings() {
+        if (!File.Exists(SettingsFilePath))
+            return new Settings();
+
+        var json = File.ReadAllText(SettingsFilePath);
+        return JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
     }
 
     private static void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {

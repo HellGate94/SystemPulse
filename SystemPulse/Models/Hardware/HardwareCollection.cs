@@ -51,20 +51,8 @@ public partial class HardwareItem : ObservableObject, IHardwareItem {
         }
     }
 
-    public void Update() {
+    public virtual void Update() {
         Hardware.Update();
-        foreach (var sensor in Sensors) {
-            sensor.Update();
-        }
-    }
-}
-
-public partial class GenericHardwareItem(string name) : ObservableObject, IHardwareItem {
-    public SensorCollection Sensors { get; } = [];
-
-    public string Name => name;
-
-    public void Update() {
         foreach (var sensor in Sensors) {
             sensor.Update();
         }

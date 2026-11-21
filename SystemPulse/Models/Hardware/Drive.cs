@@ -3,23 +3,27 @@ using LibreHardwareMonitor.Hardware;
 using System.IO;
 
 namespace SystemPulse.Models.Hardware;
-public sealed partial class Drive : ObservableObject, IHardwareItem {
+
+public partial class Drive : HardwareItem {
     private readonly DriveInfo _driveInfo;
-    public string Name => _driveInfo.Name.Replace("\\", "");
 
-    public SensorCollection Sensors { get; } = [];
+    public string VolumeLabel => _driveInfo.VolumeLabel;
+    public string DriveFormat => _driveInfo.DriveFormat;
 
-    public Drive(DriveInfo driveInfo) {
+    [ObservableProperty]
+    private double _usedSpace;
+
+    public Drive(IHardware hardware, DriveInfo driveInfo) : base(hardware) {
         _driveInfo = driveInfo;
-        Sensors.Add(new CustomSensorItem("Load/FreeSpace", () => driveInfo.AvailableFreeSpace, SensorType.Load));
-        Sensors.Add(new CustomSensorItem("Load/TotalSpace", () => driveInfo.TotalSize, SensorType.Load));
-        Sensors.Add(new CustomSensorItem("Load/UsedSpace", () => driveInfo.TotalSize - driveInfo.AvailableFreeSpace, SensorType.Load));
-        Sensors.Add(new CustomSensorItem("Load", () => (1f - (driveInfo.AvailableFreeSpace / (float)driveInfo.TotalSize)) * 100f, SensorType.Load));
+        UpdateUsedSpace();
     }
 
-    public void Update() {
-        foreach (var sensor in Sensors) {
-            sensor.Update();
-        }
+    public override void Update() {
+        base.Update();
+        UpdateUsedSpace();
+    }
+
+    private void UpdateUsedSpace() {
+        UsedSpace = (_driveInfo.TotalSize - _driveInfo.AvailableFreeSpace) / (1024d * 1024d * 1024d);
     }
 }

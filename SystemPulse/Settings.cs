@@ -34,4 +34,16 @@ public partial class Settings : ObservableValidator {
 
     [ObservableProperty]
     private Side _side = Side.Right;
+
+    [ObservableProperty, NotifyDataErrorInfo]
+    [Range(0, 150)]
+    private int _cpuTempWarning = 85;
+
+    [ObservableProperty, NotifyDataErrorInfo]
+    [Range(0, 150)]
+    private int _gpuTempWarning = 85;
+
+    [ObservableProperty, NotifyDataErrorInfo]
+    [Range(0, 150)]
+    private int _driveTempWarning = 70;
 }

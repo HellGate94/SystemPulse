@@ -3,8 +3,9 @@
 					xmlns:controls="using:SystemPulse.Controls">
 
 	<Design.PreviewWith>
-		<StackPanel Width="400" Spacing="10" Margin="20">
-			<controls:DataItem Label="Load" Value="65" ValueFormat="{}{0:0}%" />
+		<StackPanel Width="142" Spacing="10" Margin="20">
+			<controls:DataItem Label="RAM" Value="65" ValueFormat="{}{0:0}%" LabelValue="11.2 GB" LabelValueToolTip="Available memory" />
+			<controls:DataItem Label="Down" Value="35" LabelValue="12.4 MB/s" />
 		</StackPanel>
 	</Design.PreviewWith>
 
@@ -21,16 +22,32 @@
 									   Text="{TemplateBinding Label}"
 									   IsVisible="{TemplateBinding Label, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 						</StackPanel>
-						<TextBlock Grid.Column="1"
-								   Classes="MetricValue"
-								   Text="{TemplateBinding DisplayValue}" />
+						<StackPanel Grid.Column="1"
+									Orientation="Horizontal"
+									Spacing="4"
+									VerticalAlignment="Center"
+									Background="Transparent"
+									IsVisible="{TemplateBinding LabelValue, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+									ToolTip.Tip="{TemplateBinding LabelValueToolTip}">
+							<ContentPresenter Content="{TemplateBinding SecondaryIcon}"
+											  VerticalAlignment="Center"
+											  IsVisible="{TemplateBinding SecondaryIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+							<TextBlock Classes="MetricSecondary"
+									   Text="{TemplateBinding LabelValue}" />
+						</StackPanel>
 					</Grid>
-					<ProgressBar Classes="Load"
-								 Minimum="{TemplateBinding Minimum}"
-								 Maximum="{TemplateBinding Maximum}"
-								 Value="{TemplateBinding Value}"
-								 Classes.isAlert="{TemplateBinding IsAlert}"
-								 ToolTip.Tip="{TemplateBinding ProgressToolTip}" />
+					<Panel>
+						<ProgressBar Classes="Load"
+									 Minimum="{TemplateBinding Minimum}"
+									 Maximum="{TemplateBinding Maximum}"
+									 Value="{TemplateBinding Value}"
+									 Classes.isWarning="{TemplateBinding IsWarning}"
+									 controls:ToolTipHelper.Tip="{TemplateBinding ProgressToolTip}" />
+						<TextBlock Classes="BarOverlayText"
+								   Text="{TemplateBinding ProgressValue}"
+								   IsVisible="{TemplateBinding ProgressValue, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+								   IsHitTestVisible="False" />
+					</Panel>
 				</StackPanel>
 			</ControlTemplate>
 		</Setter>

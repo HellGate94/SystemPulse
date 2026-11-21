@@ -1,17 +1,17 @@
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 
 namespace SystemPulse.Controls;
 
-[PseudoClasses(":alert")]
 public class DataItem : TemplatedControl {
     public static readonly StyledProperty<string?> LabelProperty =
         AvaloniaProperty.Register<DataItem, string?>(nameof(Label));
 
     public static readonly StyledProperty<object?> IconProperty =
         AvaloniaProperty.Register<DataItem, object?>(nameof(Icon));
+
+    public static readonly StyledProperty<bool> IsWarningProperty =
+        AvaloniaProperty.Register<DataItem, bool>(nameof(IsWarning));
 
     public static readonly StyledProperty<double> ValueProperty =
         AvaloniaProperty.Register<DataItem, double>(nameof(Value));
@@ -28,11 +28,17 @@ public class DataItem : TemplatedControl {
     public static readonly StyledProperty<string?> ValueTextProperty =
         AvaloniaProperty.Register<DataItem, string?>(nameof(ValueText));
 
-    public static readonly StyledProperty<string?> DisplayValueProperty =
-        AvaloniaProperty.Register<DataItem, string?>(nameof(DisplayValue));
+    public static readonly StyledProperty<string?> ProgressValueProperty =
+        AvaloniaProperty.Register<DataItem, string?>(nameof(ProgressValue));
 
-    public static readonly StyledProperty<bool> IsAlertProperty =
-        AvaloniaProperty.Register<DataItem, bool>(nameof(IsAlert));
+    public static readonly StyledProperty<string?> LabelValueProperty =
+        AvaloniaProperty.Register<DataItem, string?>(nameof(LabelValue));
+
+    public static readonly StyledProperty<object?> SecondaryIconProperty =
+        AvaloniaProperty.Register<DataItem, object?>(nameof(SecondaryIcon));
+
+    public static readonly StyledProperty<object?> LabelValueToolTipProperty =
+        AvaloniaProperty.Register<DataItem, object?>(nameof(LabelValueToolTip));
 
     public static readonly StyledProperty<object?> ProgressToolTipProperty =
         AvaloniaProperty.Register<DataItem, object?>(nameof(ProgressToolTip));
@@ -45,6 +51,11 @@ public class DataItem : TemplatedControl {
     public object? Icon {
         get => GetValue(IconProperty);
         set => SetValue(IconProperty, value);
+    }
+
+    public bool IsWarning {
+        get => GetValue(IsWarningProperty);
+        set => SetValue(IsWarningProperty, value);
     }
 
     public double Value {
@@ -72,19 +83,29 @@ public class DataItem : TemplatedControl {
         set => SetValue(ValueTextProperty, value);
     }
 
-    public string? DisplayValue {
-        get => GetValue(DisplayValueProperty);
-        private set => SetValue(DisplayValueProperty, value);
+    public string? ProgressValue {
+        get => GetValue(ProgressValueProperty);
+        private set => SetValue(ProgressValueProperty, value);
+    }
+
+    public string? LabelValue {
+        get => GetValue(LabelValueProperty);
+        set => SetValue(LabelValueProperty, value);
+    }
+
+    public object? SecondaryIcon {
+        get => GetValue(SecondaryIconProperty);
+        set => SetValue(SecondaryIconProperty, value);
+    }
+
+    public object? LabelValueToolTip {
+        get => GetValue(LabelValueToolTipProperty);
+        set => SetValue(LabelValueToolTipProperty, value);
     }
 
     public string? FormattedValue {
         get => ValueText;
         set => ValueText = value;
-    }
-
-    public bool IsAlert {
-        get => GetValue(IsAlertProperty);
-        set => SetValue(IsAlertProperty, value);
     }
 
     public object? ProgressToolTip {
@@ -93,34 +114,26 @@ public class DataItem : TemplatedControl {
     }
 
     static DataItem() {
-        ValueProperty.Changed.AddClassHandler<DataItem>((item, _) => item.UpdateDisplayValue());
-        ValueFormatProperty.Changed.AddClassHandler<DataItem>((item, _) => item.UpdateDisplayValue());
-        ValueTextProperty.Changed.AddClassHandler<DataItem>((item, _) => item.UpdateDisplayValue());
+        ValueProperty.Changed.AddClassHandler<DataItem>((item, _) => item.UpdateProgressValue());
+        ValueFormatProperty.Changed.AddClassHandler<DataItem>((item, _) => item.UpdateProgressValue());
+        ValueTextProperty.Changed.AddClassHandler<DataItem>((item, _) => item.UpdateProgressValue());
     }
 
     public DataItem() {
-        UpdateDisplayValue();
+        UpdateProgressValue();
     }
 
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
-        base.OnPropertyChanged(change);
-
-        if (change.Property == IsAlertProperty) {
-            PseudoClasses.Set(":alert", change.GetNewValue<bool>());
-        }
-    }
-
-    private void UpdateDisplayValue() {
+    private void UpdateProgressValue() {
         if (ValueText is not null) {
-            SetCurrentValue(DisplayValueProperty, ValueText);
+            SetCurrentValue(ProgressValueProperty, ValueText);
         } else if (!string.IsNullOrEmpty(ValueFormat)) {
             try {
-                SetCurrentValue(DisplayValueProperty, string.Format(ValueFormat, Value));
+                SetCurrentValue(ProgressValueProperty, string.Format(ValueFormat, Value));
             } catch {
-                SetCurrentValue(DisplayValueProperty, Value.ToString());
+                SetCurrentValue(ProgressValueProperty, Value.ToString());
             }
         } else {
-            SetCurrentValue(DisplayValueProperty, Value.ToString());
+            SetCurrentValue(ProgressValueProperty, null);
         }
     }
 }

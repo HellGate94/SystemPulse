@@ -2,14 +2,14 @@
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Design.PreviewWith>
 		<Border Padding="16" Background="{DynamicResource SystemAltMediumHighColor}">
-			<StackPanel Width="150" Spacing="12">
-				<ProgressBar Classes="Load" Value="23" />
-				<ProgressBar Classes="Load" Value="50" />
-				<ProgressBar Classes="Load" Value="72" />
+			<StackPanel Width="142" Spacing="12">
+				<ProgressBar Height="17" Value="23" />
+				<ProgressBar Height="17" Value="50" />
+				<ProgressBar Height="17" Value="72" />
 				<StackPanel Orientation="Horizontal" Spacing="5">
-					<ProgressBar Classes="Load CoreLoad" Value="25" />
-					<ProgressBar Classes="Load CoreLoad" Value="70" />
-					<ProgressBar Classes="Load CoreLoad" Value="45" />
+					<ProgressBar Width="10" Height="26" Orientation="Vertical" Value="25" />
+					<ProgressBar Width="10" Height="26" Orientation="Vertical" Value="70" />
+					<ProgressBar Width="10" Height="26" Orientation="Vertical" Value="45" />
 				</StackPanel>
 			</StackPanel>
 		</Border>
@@ -18,7 +18,7 @@
 	<ControlTheme x:Key="{x:Type ProgressBar}" TargetType="ProgressBar">
 		<Setter Property="Foreground">
 			<Setter.Value>
-				<SolidColorBrush Color="{DynamicResource SystemAccentColor}" />
+				<SolidColorBrush Color="{DynamicResource SystemAccentColor}" Opacity="0.6" />
 			</Setter.Value>
 		</Setter>
 		<Setter Property="Background">

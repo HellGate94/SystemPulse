@@ -2,6 +2,7 @@
 using Injectio.Attributes;
 using LibreHardwareMonitor.Hardware;
 using LibreHardwareMonitor.Hardware.Cpu;
+using LibreHardwareMonitor.Hardware.Storage;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -26,6 +27,7 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
             IsGpuEnabled = true,
             IsMemoryEnabled = true,
             IsNetworkEnabled = true,
+            IsStorageEnabled = true,
         };
         _computer.Open();
 
@@ -41,28 +43,45 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
             .Where(s => s.Index >= 2) // 0 is total load, 1 is core max
             .ToArray();
 
-        //TODO: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/issues/1632
-        //for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx++) {
-        //    var pcpu = cpu.CpuId[coreIdx];
-        //    PhysicalCore physicalCore = new(coreIdx);
-        //    for (int threadIdx = 0; threadIdx < pcpu.Length; threadIdx++) {
-        //        var thread = cpu.CpuId[coreIdx][threadIdx];
-        //        LogicalCore logicalCore = new(thread.Thread, cpuLoadSensors[thread.Thread]);
-        //        physicalCore.LogicalCores.Add(logicalCore);
-        //    }
-        //    PhysicalCores.Add(physicalCore);
-        //}
+        var coreSensors = cpuHardware.Sensors
+            .OfType<SensorItem>()
+            .Where(s => s.SensorType != SensorType.Load)
+            .ToArray();
 
-        // Hardcoded Workaround
-        for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx += 2) {
-            var pcpu = cpu.CpuId[coreIdx];
-            PhysicalCore physicalCore = new(coreIdx);
-            for (int threadIdx = 0; threadIdx < 2; threadIdx++) {
-                var thread = cpu.CpuId[coreIdx + threadIdx][0];
-                LogicalCore logicalCore = new(thread.Thread, cpuLoadSensors[thread.Thread]);
-                physicalCore.LogicalCores.Add(logicalCore);
+        if (cpu.CpuId.Any(p => p.Length > 1)) {
+            for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx++) {
+                var pcpu = cpu.CpuId[coreIdx];
+                var physicalCore = CreatePhysicalCore(coreIdx, coreSensors);
+                for (int threadIdx = 0; threadIdx < pcpu.Length; threadIdx++) {
+                    var thread = pcpu[threadIdx];
+                    if (thread.Thread < cpuLoadSensors.Length) {
+                        physicalCore.LogicalCores.Add(new LogicalCore(thread.Thread, cpuLoadSensors[thread.Thread], physicalCore));
+                    }
+                }
+                PhysicalCores.Add(physicalCore);
             }
-            PhysicalCores.Add(physicalCore);
+        } else {
+            // Workaround for LibreHardwareMonitor#1632
+            int physicalCoreCount = coreSensors.Count(s =>
+                s.SensorType == SensorType.Clock &&
+                s.Name.StartsWith("Clock/Core#", StringComparison.Ordinal) &&
+                !s.Name.EndsWith("(Effective)", StringComparison.Ordinal));
+
+            int threadsPerCore = physicalCoreCount > 0 && cpu.CpuId.Length % physicalCoreCount == 0
+                ? cpu.CpuId.Length / physicalCoreCount
+                : 2;
+
+            for (int coreIdx = 0; coreIdx < cpu.CpuId.Length; coreIdx += threadsPerCore) {
+                int physicalIdx = coreIdx / threadsPerCore;
+                var physicalCore = CreatePhysicalCore(physicalIdx, coreSensors);
+                for (int threadIdx = 0; threadIdx < threadsPerCore && (coreIdx + threadIdx) < cpu.CpuId.Length; threadIdx++) {
+                    var thread = cpu.CpuId[coreIdx + threadIdx][0];
+                    if (thread.Thread < cpuLoadSensors.Length) {
+                        physicalCore.LogicalCores.Add(new LogicalCore(thread.Thread, cpuLoadSensors[thread.Thread], physicalCore));
+                    }
+                }
+                PhysicalCores.Add(physicalCore);
+            }
         }
 
         // =========================================================
@@ -79,9 +98,22 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
 
         // =========================================================
 
-        var drives = DriveInfo.GetDrives();
+        var storage = _computer.Hardware
+            .OfType<StorageDevice>()
+            .ToArray();
+
+        var drives = DriveInfo.GetDrives()
+            .Where(d => d.IsReady && d.DriveType == DriveType.Fixed);
+
         foreach (var drive in drives) {
-            Drives.Add(new Drive(drive));
+            char driveLetter = drive.Name[0];
+
+            var hardware = storage.FirstOrDefault(h => h.Storage.Partitions
+                .Any(p => char.ToUpperInvariant(p.DriveLetter ?? '\0') == char.ToUpperInvariant(driveLetter)));
+
+            if (hardware is not null) {
+                Drives.Add(new Drive(hardware, drive));
+            }
         }
 
         // =========================================================
@@ -103,6 +135,21 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
         Update();
     }
 
+    private static PhysicalCore CreatePhysicalCore(int coreIdx, SensorItem[] coreSensors) {
+        var core = new PhysicalCore(coreIdx);
+        string token = $"Core#{coreIdx + 1}";
+
+        foreach (var sensor in coreSensors) {
+            int idx = sensor.Name.IndexOf(token, StringComparison.Ordinal);
+            if (idx >= 0 && (idx + token.Length == sensor.Name.Length || !char.IsDigit(sensor.Name[idx + token.Length]))) {
+                string normalizedName = sensor.Name.Remove(idx + "Core".Length, token.Length - "Core".Length);
+                core.Sensors.Add(new SensorItem(sensor.Sensor, normalizedName));
+            }
+        }
+
+        return core;
+    }
+
     private static NetworkInterface? GetActiveNetworkAdapter() {
         var interfaces = NetworkInterface.GetAllNetworkInterfaces()
             .Where(nic =>
@@ -117,6 +164,10 @@ public sealed partial class HardwareInfoService : ObservableObject, IDisposable,
 
     public void Update() {
         Hardwares.Update();
+
+        foreach (var core in PhysicalCores) {
+            core.Update();
+        }
 
         foreach (var drive in Drives) {
             drive.Update();

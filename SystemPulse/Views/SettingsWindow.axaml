@@ -3,49 +3,83 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:SystemPulse.ViewModels"
-		xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:c="using:SystemPulse.Converters"
-        mc:Ignorable="d" SizeToContent="Height" Width="300" CanResize="False"
-        x:Class="SystemPulse.SettingsWindow" x:DataType="vm:SettingsViewModel"
-        Icon="/Assets/SystemPulse.ico" FontFamily="{StaticResource RubikFont}"
+        mc:Ignorable="d"
+        SizeToContent="Height"
+        Width="340"
+        CanResize="False"
+        Foreground="{DynamicResource SystemBaseHighColor}"
+        x:Class="SystemPulse.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Icon="/Assets/SystemPulse.ico"
+        FontFamily="{StaticResource RubikFont}"
         Title="SystemPulse Settings">
 	<Window.Resources>
 		<c:MathConverter x:Key="MbitConverter" Formula="x / 125000.0" BackFormula="x * 125000.0" />
 	</Window.Resources>
-	<StackPanel Margin="10" Spacing="10">
-        <StackPanel>
-            <TextBlock Text="Refresh Interval (ms)" Margin="2" />
-            <NumericUpDown Value="{Binding Settings.RefreshInterval, Mode=TwoWay}" Increment="500" Minimum="500" />
-        </StackPanel>
-            
+	<Window.Styles>
+		<StyleInclude Source="/Resources/Style.axaml" />
+	</Window.Styles>
+
+	<StackPanel Classes="SettingsRoot">
+		<Grid Classes="SettingsHeader" ColumnDefinitions="Auto,*">
+			<TextBlock Text="General" />
+			<Border Grid.Column="1" Classes="HeaderLine" />
+		</Grid>
+
 		<StackPanel>
-			<TextBlock Text="External IP Service:" Margin="2" />
+			<TextBlock Classes="FieldLabel" Text="Refresh Interval (ms)" />
+			<NumericUpDown Value="{Binding Settings.RefreshInterval, Mode=TwoWay}" Increment="500" Minimum="500" Maximum="10000" FormatString="0" />
+		</StackPanel>
+
+		<StackPanel>
+			<TextBlock Classes="FieldLabel" Text="External IP Service" />
 			<AutoCompleteBox Text="{Binding Settings.IPService, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" ItemsSource="{Binding DefaultIPServices}" FilterMode="Contains" />
 		</StackPanel>
 
-		<StackPanel>
-			<TextBlock Text="Screen:" Margin="2" />
-			<ComboBox SelectedIndex="{Binding Settings.TargetScreen}" ItemsSource="{Binding ScreenList}" DisplayMemberBinding="{Binding DisplayName}" HorizontalAlignment="Stretch" />
-		</StackPanel>
+		<Grid ColumnDefinitions="*,100" ColumnSpacing="8">
+			<StackPanel>
+				<TextBlock Classes="FieldLabel" Text="Screen" />
+				<ComboBox SelectedIndex="{Binding Settings.TargetScreen}" ItemsSource="{Binding ScreenList}" DisplayMemberBinding="{Binding DisplayName}" HorizontalAlignment="Stretch" />
+			</StackPanel>
+			<StackPanel Grid.Column="1">
+				<TextBlock Classes="FieldLabel" Text="Side" />
+				<ComboBox SelectedIndex="{Binding Settings.Side}" ItemsSource="{Binding Sides}" HorizontalAlignment="Stretch" />
+			</StackPanel>
+		</Grid>
 
-		<StackPanel>
-			<TextBlock Text="Screen Side:" Margin="2" />
-			<ComboBox SelectedIndex="{Binding Settings.Side}" ItemsSource="{Binding Sides}" HorizontalAlignment="Stretch" />
-		</StackPanel>
+		<CheckBox Content="Run on startup" IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
 
-		<StackPanel>
-			<TextBlock Text="Download Bandwidth: (Mbps)" Margin="2" />
-			<NumericUpDown Value="{Binding Settings.DownloadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
-		</StackPanel>
+		<Grid Classes="SettingsHeader" ColumnDefinitions="Auto,*">
+			<TextBlock Text="Network (Mbps)" />
+			<Border Grid.Column="1" Classes="HeaderLine" />
+		</Grid>
 
-		<StackPanel>
-			<TextBlock Text="Upload Bandwidth: (Mbps)" Margin="2" />
-			<NumericUpDown Value="{Binding Settings.UploadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
-		</StackPanel>
+		<Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+			<StackPanel>
+				<TextBlock Classes="FieldLabel" Text="Download" />
+				<NumericUpDown Value="{Binding Settings.DownloadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
+			</StackPanel>
+			<StackPanel Grid.Column="1">
+				<TextBlock Classes="FieldLabel" Text="Upload" />
+				<NumericUpDown Value="{Binding Settings.UploadBandwidth, Mode=TwoWay, Converter={StaticResource MbitConverter}}" Increment="5" Minimum="0" />
+			</StackPanel>
+		</Grid>
 
-		<StackPanel>
-			<TextBlock Text="Autostart:" Margin="2" />
-			<CheckBox IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
-		</StackPanel>
+		<Grid Classes="SettingsHeader" ColumnDefinitions="Auto,*">
+			<TextBlock Text="Temperature Warnings (°C)" />
+			<Border Grid.Column="1" Classes="HeaderLine" />
+		</Grid>
+
+		<Grid ColumnDefinitions="*,140" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+			<TextBlock Grid.Row="0" Classes="FieldLabel" Margin="0" VerticalAlignment="Center" Text="Processor" />
+			<NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Settings.CpuTempWarning, Mode=TwoWay}" Increment="5" Minimum="0" Maximum="150" FormatString="0" />
+
+			<TextBlock Grid.Row="1" Classes="FieldLabel" Margin="0" VerticalAlignment="Center" Text="Graphics" />
+			<NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Settings.GpuTempWarning, Mode=TwoWay}" Increment="5" Minimum="0" Maximum="150" FormatString="0" />
+
+			<TextBlock Grid.Row="2" Classes="FieldLabel" Margin="0" VerticalAlignment="Center" Text="Storage" />
+			<NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding Settings.DriveTempWarning, Mode=TwoWay}" Increment="5" Minimum="0" Maximum="150" FormatString="0" />
+		</Grid>
 	</StackPanel>
 </Window>
